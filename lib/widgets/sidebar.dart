@@ -7,6 +7,7 @@ class Sidebar extends StatefulWidget {
   State<Sidebar> createState() => _SidebarState();
 }
 
+//
 class _SidebarState extends State<Sidebar> {
   int? hoveredIndex;
   int selectedIndex = -1; // Home is selected by default
