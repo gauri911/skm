@@ -1,40 +1,25 @@
-// import 'package:flutter/material.dart';
-// import 'pages/home_page.dart';
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       title: 'FEITIAN Authenticator',
-//       theme: ThemeData(fontFamily: 'Arial'), // Match the font style
-//       home: HomePage(),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'pages/home_page.dart';
+import 'pages/accounts_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FETTIAN Dashboard',
+      title: 'FEITIAN Dashboard',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
-      home: HomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),
+        '/accounts': (context) => const AccountsPage(),
+      },
     );
   }
 }
-//END
