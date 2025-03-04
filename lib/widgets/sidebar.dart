@@ -23,6 +23,18 @@ class _SidebarState extends State<Sidebar> {
         setState(() {
           selectedIndex = 4; // Account
         });
+      } else if (currentRoute == '/credentials') {
+        setState(() {
+          selectedIndex = 5; // Credentials
+        });
+      } else if (currentRoute == '/certificates') {
+        setState(() {
+          selectedIndex = 6; // Certificates
+        });
+      } else if (currentRoute == '/slots') {
+        setState(() {
+          selectedIndex = 7; // Slots
+        });
       } else if (currentRoute == '/') {
         setState(() {
           selectedIndex = 3; // Home
@@ -53,6 +65,21 @@ class _SidebarState extends State<Sidebar> {
       case 4: // Account
         if (selectedIndex != index) {
           Navigator.pushReplacementNamed(context, '/accounts');
+        }
+        break;
+      case 5: // Credentials
+        if (selectedIndex != index) {
+          Navigator.pushReplacementNamed(context, '/credentials');
+        }
+        break;
+      case 6: // Certificates
+        if (selectedIndex != index) {
+          Navigator.pushReplacementNamed(context, '/certificates');
+        }
+        break;
+      case 7: // Slots
+        if (selectedIndex != index) {
+          Navigator.pushReplacementNamed(context, '/slots');
         }
         break;
       // Add more cases for other pages as needed
