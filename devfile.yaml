@@ -1,0 +1,23 @@
+schemaVersion: 2.0.0
+components:
+  - name: dev
+    container:
+      image: public.ecr.aws/aws-mde/universal-image:latest
+      env:
+        - name: FLUTTER_HOME
+          value: /home/user/flutter
+        - name: PATH
+          value: ${FLUTTER_HOME}/bin:${PATH}
+commands:
+  - id: install
+    exec:
+      component: dev
+      commandLine: "flutter pub get"
+  - id: build
+    exec:
+      component: dev
+      commandLine: "flutter build"
+  - id: test
+    exec:
+      component: dev
+      commandLine: "flutter test"
