@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../widgets/sidebar.dart';
 import 'dart:math' as math;
 
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage>
   late AnimationController _animationController;
   late Animation<double> _rotationAnimation;
   late Animation<double> _scaleAnimation;
+  String securityKeyName = 'FEITIAN iePass K44 USB Security Key';
 
   @override
   void initState() {
@@ -49,6 +51,118 @@ class _HomePageState extends State<HomePage>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  // Function to show snackbar for feedback
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  // Function to handle copying text to clipboard
+  void _copyToClipboard(String text, String label) {
+    Clipboard.setData(ClipboardData(text: text));
+    _showSnackBar('$label copied to clipboard');
+  }
+
+// Function to show edit dialog with updated styling
+  Future<void> _showEditDialog() async {
+    TextEditingController textController =
+        TextEditingController(text: securityKeyName);
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.grey[300], // Changed to light grey color
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          // Adding constraints to reduce the width
+          child: Container(
+            constraints: BoxConstraints(maxWidth: 300),
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Edit Security Key Name',
+                    style: TextStyle(
+                      fontSize: 18, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800], // Match home page text color
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: textController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(color: Colors.grey[400]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                        borderSide: BorderSide(color: Colors.blue.shade300),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: Colors.grey[700],
+                            fontSize: 14,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      SizedBox(width: 16),
+                      TextButton(
+                        child: Text(
+                          'Save',
+                          style: TextStyle(
+                            color: Colors.blue[700],
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            securityKeyName = textController.text;
+                          });
+                          Navigator.of(context).pop();
+                          _showSnackBar('Security key name updated');
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -117,7 +231,7 @@ class _HomePageState extends State<HomePage>
                               children: [
                                 Expanded(
                                   child: Text(
-                                    'FEITIAN iePass K44 USB Security Key',
+                                    securityKeyName,
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.black54,
@@ -128,8 +242,11 @@ class _HomePageState extends State<HomePage>
                                   ),
                                 ),
                                 SizedBox(width: 8),
-                                Icon(Icons.edit_outlined,
-                                    color: Colors.black45, size: 20),
+                                InkWell(
+                                  onTap: _showEditDialog,
+                                  child: Icon(Icons.edit_outlined,
+                                      color: Colors.black45, size: 20),
+                                ),
                               ],
                             ),
                             bottomBorder: true,
@@ -196,13 +313,13 @@ class _HomePageState extends State<HomePage>
           children: [
             Expanded(
               child: _buildEmbossedCard(
-                child: _buildInfoTile('Serial No', '123456789'),
+                child: _buildInfoTile('PID & VID', '045D&6789E'),
               ),
             ),
             SizedBox(width: 12),
             Expanded(
               child: _buildEmbossedCard(
-                child: _buildInfoTile('Version No', 'v1.0.3'),
+                child: _buildInfoTile('CosVersion No', '1600'),
               ),
             ),
           ],
@@ -287,7 +404,11 @@ class _HomePageState extends State<HomePage>
               ),
             ),
             SizedBox(width: 4),
-            Icon(Icons.content_copy_outlined, color: Colors.black45, size: 18),
+            InkWell(
+              onTap: () => _copyToClipboard(value, title),
+              child: Icon(Icons.content_copy_outlined,
+                  color: Colors.black45, size: 18),
+            ),
           ],
         ),
         SizedBox(height: 4),
