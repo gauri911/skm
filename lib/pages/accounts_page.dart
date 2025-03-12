@@ -10,6 +10,17 @@ class AccountsPage extends StatefulWidget {
 
 class _AccountsPageState extends State<AccountsPage> {
   bool isCollapsed = false; // State to track sidebar collapse
+  final TextEditingController _oldPinController = TextEditingController();
+  final TextEditingController _newPinController = TextEditingController();
+  final TextEditingController _confirmPinController = TextEditingController();
+
+  @override
+  void dispose() {
+    _oldPinController.dispose();
+    _newPinController.dispose();
+    _confirmPinController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +67,7 @@ class _AccountsPageState extends State<AccountsPage> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
                             child: Text(
-                              'Accounts',
+                              'Security Access Manager',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -75,17 +86,23 @@ class _AccountsPageState extends State<AccountsPage> {
                             children: [
                               Expanded(
                                 child: _buildActionButton(
-                                    'Create Account', Icons.add),
+                                    'PIN Management',
+                                    Icons.pin_outlined,
+                                    () => _showPinDialog(context)),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildActionButton(
-                                    'Edit Account', Icons.edit_outlined),
+                                    'Fingerprint Management',
+                                    Icons.fingerprint,
+                                    () {}),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildActionButton(
-                                    'View All', Icons.visibility_outlined),
+                                    'Credential Management',
+                                    Icons.key_outlined,
+                                    () {}),
                               ),
                             ],
                           ),
@@ -134,7 +151,7 @@ class _AccountsPageState extends State<AccountsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Get Started with your accounts',
+                  'Set up your authentication settings now',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -149,7 +166,7 @@ class _AccountsPageState extends State<AccountsPage> {
             ),
             const SizedBox(height: 14),
             Text(
-              'Add accounts to your Security key supporting OATH / PIV / FIDO2',
+              'Add and manage authentication methods OATH / PIV / FIDO2 for your Security keys',
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[600],
@@ -161,7 +178,7 @@ class _AccountsPageState extends State<AccountsPage> {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon) {
+  Widget _buildActionButton(String label, IconData icon, VoidCallback onTap) {
     return Container(
       height: 48, // Fixed height for all buttons
       decoration: BoxDecoration(
@@ -186,9 +203,7 @@ class _AccountsPageState extends State<AccountsPage> {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(8),
-          onTap: () {
-            // Action when button is tapped
-          },
+          onTap: onTap,
           child: Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -209,6 +224,148 @@ class _AccountsPageState extends State<AccountsPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showPinDialog(BuildContext context) {
+    // Clear controllers before showing dialog
+    _oldPinController.clear();
+    _newPinController.clear();
+    _confirmPinController.clear();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'PIN MANAGEMENT',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Change PIN',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Old PIN:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _oldPinController,
+                        decoration: const InputDecoration(
+                          hintText: 'Please input old pin',
+                          border: OutlineInputBorder(),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        ),
+                        obscureText: true,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 8),
+                    const Text(
+                      'New PIN:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _newPinController,
+                        decoration: const InputDecoration(
+                          hintText: 'Please input new pin',
+                          border: OutlineInputBorder(),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        ),
+                        obscureText: true,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'Confirm PIN:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _confirmPinController,
+                        decoration: const InputDecoration(
+                          hintText: 'Please input confirm pin',
+                          border: OutlineInputBorder(),
+                          contentPadding:
+                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        ),
+                        obscureText: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Validate and process PIN change
+                if (_newPinController.text == _confirmPinController.text) {
+                  // Process PIN change
+                  Navigator.of(context).pop();
+                  // Show success message or handle further actions
+                } else {
+                  // Show error that PINs don't match
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text('New PIN and Confirm PIN do not match')),
+                  );
+                }
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
