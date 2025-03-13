@@ -13,12 +13,17 @@ class _AccountsPageState extends State<AccountsPage> {
   final TextEditingController _oldPinController = TextEditingController();
   final TextEditingController _newPinController = TextEditingController();
   final TextEditingController _confirmPinController = TextEditingController();
+  final TextEditingController _fidoPinController = TextEditingController();
+  final TextEditingController _credentialPinController =
+      TextEditingController();
 
   @override
   void dispose() {
     _oldPinController.dispose();
     _newPinController.dispose();
     _confirmPinController.dispose();
+    _fidoPinController.dispose();
+    _credentialPinController.dispose();
     super.dispose();
   }
 
@@ -67,7 +72,7 @@ class _AccountsPageState extends State<AccountsPage> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
                             child: Text(
-                              'Security Access Manager',
+                              '',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
@@ -95,14 +100,14 @@ class _AccountsPageState extends State<AccountsPage> {
                                 child: _buildActionButton(
                                     'Fingerprint Management',
                                     Icons.fingerprint,
-                                    () {}),
+                                    () => _showFingerprintDialog(context)),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildActionButton(
                                     'Credential Management',
                                     Icons.key_outlined,
-                                    () {}),
+                                    () => _showCredentialDialog(context)),
                               ),
                             ],
                           ),
@@ -236,134 +241,487 @@ class _AccountsPageState extends State<AccountsPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'PIN MANAGEMENT',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
           ),
-          content: SingleChildScrollView(
+          child: Container(
+            width: 400,
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // This helps reduce the height
               children: [
-                const Text(
-                  'Change PIN',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
+                // Title with custom styling
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      topRight: Radius.circular(8.0),
+                    ),
+                  ),
+                  child: const Text(
+                    '',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Old PIN:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _oldPinController,
-                        decoration: const InputDecoration(
-                          hintText: 'Please input old pin',
-                          border: OutlineInputBorder(),
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+
+                // Content
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Change PIN',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
-                        obscureText: true,
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 12), // Reduced spacing
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            width: 100,
+                            child: Text(
+                              'Old PIN:',
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: _oldPinController,
+                              decoration: InputDecoration(
+                                hintText: 'Please input old pin',
+                                hintStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[500],
+                                ),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 8), // Reduced padding
+                                border: const UnderlineInputBorder(),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[400]!,
+                                  ),
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 13),
+                              obscureText: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8), // Reduced spacing
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            width: 100,
+                            child: Text(
+                              'New PIN:',
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: _newPinController,
+                              decoration: InputDecoration(
+                                hintText: 'Please input new pin',
+                                hintStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[500],
+                                ),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 8), // Reduced padding
+                                border: const UnderlineInputBorder(),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[400]!,
+                                  ),
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 13),
+                              obscureText: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8), // Reduced spacing
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            width: 100,
+                            child: Text(
+                              'Confirm PIN:',
+                              style: TextStyle(
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: TextField(
+                              controller: _confirmPinController,
+                              decoration: InputDecoration(
+                                hintText: 'Please input confirm pin',
+                                hintStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[500],
+                                ),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 8), // Reduced padding
+                                border: const UnderlineInputBorder(),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[400]!,
+                                  ),
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 13),
+                              obscureText: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20), // Reduced spacing
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(width: 8),
-                    const Text(
-                      'New PIN:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _newPinController,
-                        decoration: const InputDecoration(
-                          hintText: 'Please input new pin',
-                          border: OutlineInputBorder(),
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+
+                // Actions
+                Container(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+                  alignment: Alignment.centerRight,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          minimumSize:
+                              const Size(60, 30), // Smaller button size
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
-                        obscureText: true,
+                        child: const Text('Cancel'),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Confirm PIN:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: _confirmPinController,
-                        decoration: const InputDecoration(
-                          hintText: 'Please input confirm pin',
-                          border: OutlineInputBorder(),
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      TextButton(
+                        onPressed: () {
+                          // Validate and process PIN change
+                          if (_newPinController.text ==
+                              _confirmPinController.text) {
+                            // Process PIN change
+                            Navigator.of(context).pop();
+                            // Show success message or handle further actions
+                          } else {
+                            // Show error that PINs don't match
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      'New PIN and Confirm PIN do not match')),
+                            );
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black,
+                          minimumSize:
+                              const Size(60, 30), // Smaller button size
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
-                        obscureText: true,
+                        child: const Text('OK'),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
+        );
+      },
+    );
+  }
+
+  void _showFingerprintDialog(BuildContext context) {
+    // Clear controller before showing dialog
+    _fidoPinController.clear();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          backgroundColor:
+              Colors.grey[100], // Light grey background as shown in image
+          child: Container(
+            width: 350, // Smaller width to match the image
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.grey[100], // Light grey background
+              borderRadius: BorderRadius.circular(8.0),
             ),
-            TextButton(
-              onPressed: () {
-                // Validate and process PIN change
-                if (_newPinController.text == _confirmPinController.text) {
-                  // Process PIN change
-                  Navigator.of(context).pop();
-                  // Show success message or handle further actions
-                } else {
-                  // Show error that PINs don't match
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('New PIN and Confirm PIN do not match')),
-                  );
-                }
-              },
-              child: const Text('OK'),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // This helps reduce the height
+              children: [
+                // Title with bold text
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Verify FIDO',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold, // Changed to bold
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Content
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    children: [
+                      // FIDO2 PIN input
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Label
+                          Text(
+                            'FIDO2 PIN:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          // Input field
+                          Expanded(
+                            child: TextField(
+                              controller: _fidoPinController,
+                              decoration: InputDecoration(
+                                hintText: 'Please input FIDO PIN',
+                                hintStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[500],
+                                ),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 8),
+                                border: const UnderlineInputBorder(),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[400]!,
+                                  ),
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 13),
+                              obscureText: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Actions
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey[800],
+                              minimumSize: const Size(60, 30),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                            ),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Process FIDO verification
+                              Navigator.of(context).pop();
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey[800],
+                              minimumSize: const Size(60, 30),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                            ),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showCredentialDialog(BuildContext context) {
+    // Clear controller before showing dialog
+    _credentialPinController.clear();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          backgroundColor: Colors.grey[100],
+          child: Container(
+            width: 350,
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Verify Credential',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Content
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  child: Column(
+                    children: [
+                      // Credential PIN input
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Label
+                          Text(
+                            'Credential PIN:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[800],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          // Input field
+                          Expanded(
+                            child: TextField(
+                              controller: _credentialPinController,
+                              decoration: InputDecoration(
+                                hintText: 'Please input FIDO PIN',
+                                hintStyle: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[500],
+                                ),
+                                isDense: true,
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 8),
+                                border: const UnderlineInputBorder(),
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Colors.grey[400]!,
+                                  ),
+                                ),
+                              ),
+                              style: const TextStyle(fontSize: 13),
+                              obscureText: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Actions
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey[800],
+                              minimumSize: const Size(60, 30),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                            ),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Process Credential verification
+                              Navigator.of(context).pop();
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.grey[800],
+                              minimumSize: const Size(60, 30),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                            ),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

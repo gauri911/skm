@@ -18,6 +18,14 @@ class _HomePageState extends State<HomePage>
   late Animation<double> _scaleAnimation;
   String securityKeyName = 'FEITIAN iePass K44 USB Security Key';
 
+  // Add state variables to track button states
+  Map<String, bool> interfaceButtonStates = {
+    'FIDO': false,
+    'PIV': false,
+    'CCID': false,
+    'OTP': false,
+  };
+
   @override
   void initState() {
     super.initState();
@@ -53,13 +61,36 @@ class _HomePageState extends State<HomePage>
     super.dispose();
   }
 
-  // Function to show snackbar for feedback
+  // Modified function to show custom snackbar for feedback
   void _showSnackBar(String message) {
+    // Clear any existing SnackBars first
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    // Show the custom SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 13,
+          ),
+        ),
         duration: Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.black54, // Semi-transparent background
+        margin: EdgeInsets.only(
+          bottom: 20,
+          left:
+              MediaQuery.of(context).size.width * 0.5, // Position in right half
+          right: 20,
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        width: 200, // Fixed width to make it smaller
       ),
     );
   }
@@ -68,6 +99,15 @@ class _HomePageState extends State<HomePage>
   void _copyToClipboard(String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
     _showSnackBar('$label copied to clipboard');
+  }
+
+  // Function to toggle interface button state
+  void _toggleInterfaceButton(String interface) {
+    setState(() {
+      interfaceButtonStates[interface] = !interfaceButtonStates[interface]!;
+    });
+    _showSnackBar(
+        '${interface} interface ${interfaceButtonStates[interface]! ? 'enabled' : 'disabled'}');
   }
 
 // Function to show edit dialog with updated styling
@@ -96,13 +136,13 @@ class _HomePageState extends State<HomePage>
                   Text(
                     'Edit Security Key Name',
                     style: TextStyle(
-                      fontSize: 18, // Reduced font size
+                      fontSize: 15, // Reduced font size
                       fontWeight: FontWeight.bold,
                       color: Colors.grey[800], // Match home page text color
                       letterSpacing: 0.5,
                     ),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 15),
                   TextField(
                     controller: textController,
                     decoration: InputDecoration(
@@ -120,7 +160,7 @@ class _HomePageState extends State<HomePage>
                           EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                     ),
                   ),
-                  SizedBox(height: 24),
+                  SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -254,7 +294,8 @@ class _HomePageState extends State<HomePage>
                           // Reduced spacing between elements
                           SizedBox(height: 10),
                           _buildDataRows(),
-                          SizedBox(height: 16),
+                          // Added more spacing before the animation
+                          SizedBox(height: 24),
                           Center(
                             // Wrap image in AnimatedBuilder to animate it
                             child: AnimatedBuilder(
@@ -327,14 +368,50 @@ class _HomePageState extends State<HomePage>
         // Reduced spacing between rows
         SizedBox(height: 10),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Expanded(
+              child: _buildEmbossedCard(
+                child: IntrinsicHeight(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Support Functions',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 12),
+                      Text('U2F',
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                          overflow: TextOverflow.ellipsis),
+                      SizedBox(height: 8),
+                      Text('FIDO2',
+                          style: TextStyle(fontSize: 16, color: Colors.black54),
+                          overflow: TextOverflow.ellipsis),
+                      // Add more dummy functions to increase the height
+                      SizedBox(height: 8),
+
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                padding:
+                    EdgeInsets.all(12), // Match padding with interfaces box
+              ),
+            ),
+            SizedBox(width: 12),
             Expanded(
               child: _buildEmbossedCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Support Functions',
+                      'Interfaces',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black54,
@@ -342,41 +419,25 @@ class _HomePageState extends State<HomePage>
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
-                    SizedBox(height: 8),
-                    Text('U2F',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                        overflow: TextOverflow.ellipsis),
-                    SizedBox(height: 2),
-                    Text('FIDO2',
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                        overflow: TextOverflow.ellipsis),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: _buildEmbossedCard(
-                child: Column(
-                  children: [
+                    SizedBox(height: 12),
                     Row(
                       children: [
-                        Expanded(child: _buildChip('FIDO2')),
+                        Expanded(child: _buildClickableChip('FIDO')),
                         SizedBox(width: 8),
-                        Expanded(child: _buildChip('PIV')),
+                        Expanded(child: _buildClickableChip('PIV')),
                       ],
                     ),
                     SizedBox(height: 8),
                     Row(
                       children: [
-                        Expanded(child: _buildChip('OATH')),
+                        Expanded(child: _buildClickableChip('CCID')),
                         SizedBox(width: 8),
-                        Expanded(child: _buildChip('OTP')),
+                        Expanded(child: _buildClickableChip('OTP')),
                       ],
                     ),
                   ],
                 ),
-                padding: EdgeInsets.all(8),
+                padding: EdgeInsets.all(12),
               ),
             ),
           ],
@@ -457,6 +518,68 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  // New method to create clickable interface chips
+  Widget _buildClickableChip(String label) {
+    // Get the active state from the map
+    bool isActive = interfaceButtonStates[label] ?? false;
+
+    return GestureDetector(
+      onTap: () => _toggleInterfaceButton(label),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive
+              ? Colors.grey[500]
+              : Colors.grey[300], // Medium grey when active
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            // Invert shadows when active to create "pressed" effect
+            if (isActive)
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                offset: Offset(-2, -2),
+                blurRadius: 4,
+                spreadRadius: 0.5,
+              )
+            else
+              BoxShadow(
+                color: Colors.white.withOpacity(0.9),
+                offset: Offset(-2, -2),
+                blurRadius: 4,
+                spreadRadius: 0.5,
+              ),
+
+            if (isActive)
+              BoxShadow(
+                color: Colors.white.withOpacity(0.5),
+                offset: Offset(2, 2),
+                blurRadius: 4,
+                spreadRadius: 0.5,
+              )
+            else
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                offset: Offset(2, 2),
+                blurRadius: 4,
+                spreadRadius: 0.5,
+              ),
+          ],
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: isActive ? Colors.white : Colors.black54,
+            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+    );
+  }
+
+  // Keep this old method for compatibility but don't use it for interface buttons
   Widget _buildChip(String label) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8),

@@ -32,10 +32,6 @@ class _SidebarState extends State<Sidebar> {
   int _getSelectedIndex(String? route) {
     switch (route) {
       case '/accounts':
-        return 4;
-      case '/credentials':
-        return 5;
-      case '/certificates':
         return 6;
       case '/slots':
         return 7;
@@ -130,8 +126,6 @@ class _SidebarState extends State<Sidebar> {
                 // Dashboard section
                 _buildCollapsedMenuItem(3, Icons.home, '/'),
                 _buildCollapsedMenuItem(4, Icons.person, '/accounts'),
-                _buildCollapsedMenuItem(5, Icons.key, '/credentials'),
-                _buildCollapsedMenuItem(6, Icons.description, '/certificates'),
                 _buildCollapsedMenuItem(7, Icons.grid_4x4, '/slots'),
 
                 // Spacer to push footer to bottom
@@ -315,9 +309,6 @@ class _SidebarState extends State<Sidebar> {
                 // Dashboard section
                 _buildMenuItem(3, Icons.home, "Home", '/'),
                 _buildMenuItem(4, Icons.person, "Account", '/accounts'),
-                _buildMenuItem(5, Icons.key, "Credentials", '/credentials'),
-                _buildMenuItem(
-                    6, Icons.description, "Certificates", '/certificates'),
                 _buildMenuItem(7, Icons.grid_4x4, "Slots", '/slots'),
 
                 // Spacer to push items to the top and footer to bottom
