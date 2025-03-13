@@ -108,9 +108,263 @@ class _HomePageState extends State<HomePage>
     });
     _showSnackBar(
         '${interface} interface ${interfaceButtonStates[interface]! ? 'enabled' : 'disabled'}');
+
+    // Add this code to show the PIV management dialog when PIV is enabled
+    if (interface == 'PIV' && interfaceButtonStates[interface]!) {
+      _showPIVManagementDialog();
+    }
   }
 
-// Function to show edit dialog with updated styling
+  // Add this new function to show the PIV management dialog
+  // Add this new function to show the PIV management dialog
+  // Add this new function to show the PIV management dialog
+  Future<void> _showPIVManagementDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.grey[200],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.9, // Increased width
+            constraints: BoxConstraints(maxWidth: 800), // Increased max width
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // PIN MANAGEMENT section
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'PIN MANAGEMENT',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          children: [
+                            _buildPIVActionButton(
+                                'Change PIN', Icons.arrow_right),
+                            _buildPIVActionButton(
+                                'Change PUK', Icons.arrow_right),
+                            _buildPIVActionButton(
+                                'Change Manager Key', Icons.arrow_right),
+                            _buildPIVActionButton('Reset', Icons.arrow_right),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // CERT MANAGEMENT section
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'CERT MANAGEMENT',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      border: Border(
+                                        bottom: BorderSide(
+                                            color: Colors.grey[400]!),
+                                      ),
+                                    ),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton<String>(
+                                        value: 'Authentication (9a)',
+                                        isExpanded: true,
+                                        icon: Icon(Icons.arrow_drop_down),
+                                        items: <String>[
+                                          'Authentication (9a)',
+                                          'Digital Signature (9c)',
+                                          'Key Manager (9d)',
+                                          'Card Authentication (9e)'
+                                        ].map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text('Slot: $value'),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newValue) {},
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(8),
+                                    color: Colors.grey[700],
+                                    child: Text(
+                                      'Policy Manager',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildCertButton(
+                                            'Export', Icons.arrow_upward),
+                                      ),
+                                      Expanded(
+                                        child: _buildCertButton(
+                                            'Delete', Icons.delete_outline),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: _buildCertButton(
+                                            'Import', Icons.arrow_downward),
+                                      ),
+                                      Expanded(
+                                        child: _buildCertButton(
+                                            'Generate', Icons.refresh),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              height: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              padding: EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('CertInfo:'),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text('No certificate loaded.'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Dialog buttons
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Close'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper widget for PIN management buttons
+  Widget _buildPIVActionButton(String label, IconData icon) {
+    return Expanded(
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 16, color: Colors.grey[700]),
+            SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[800],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widget for certificate management buttons
+  Widget _buildCertButton(String label, IconData icon) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.grey[500],
+        border: Border.all(color: Colors.grey[600]!),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 16, color: Colors.white),
+          SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Function to show edit dialog with updated styling
   Future<void> _showEditDialog() async {
     TextEditingController textController =
         TextEditingController(text: securityKeyName);
@@ -411,7 +665,7 @@ class _HomePageState extends State<HomePage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Interfaces',
+                      'Applications',
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.black54,
