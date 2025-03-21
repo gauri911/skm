@@ -186,7 +186,7 @@ class _SidebarState extends State<Sidebar> {
                     child: Container(
                       padding: const EdgeInsets.all(6), // Reduced padding
                       child: const Icon(
-                        Icons.numbers,
+                        Icons.help_outline,
                         size: 20,
                         color: Color(0xFF666666),
                       ),

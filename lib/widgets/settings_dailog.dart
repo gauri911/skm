@@ -1,65 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // <-- Add this import
-import '../theme_provider.dart';
 
-class SettingsDialog extends StatelessWidget {
+class SettingsDialog extends StatefulWidget {
   const SettingsDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Settings'),
-      content: const Text('Settings dialog content'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
-        ),
-      ],
-    );
-  }
+  State<SettingsDialog> createState() => _SettingsDialogState();
 }
 
-class AppearanceDialog extends StatelessWidget {
-  const AppearanceDialog({super.key});
+class _SettingsDialogState extends State<SettingsDialog> {
+  // Default theme is light mode
+  String _selectedTheme = 'light';
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Appearance Settings'),
-      content: Consumer<ThemeProvider>(
-        // <-- Ensure ThemeProvider is properly set up
-        builder: (context, themeProvider, child) {
-          return DropdownButton<String>(
-            value: themeProvider.currentTheme,
-            items: const [
-              DropdownMenuItem(
-                value: 'light',
-                child: Text('Light Mode'),
-              ),
-              DropdownMenuItem(
-                value: 'dark',
-                child: Text('Dark Mode'),
-              ),
-              DropdownMenuItem(
-                value: 'system',
-                child: Text('System Default'),
-              ),
-            ],
-            onChanged: (String? newValue) {
-              if (newValue != null) {
-                themeProvider.setTheme(newValue);
-              }
+      title: const Text(
+        'Settings',
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Theme',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          // Light mode radio button
+          RadioListTile<String>(
+            title: const Text(
+              'Light Mode',
+              style: TextStyle(fontSize: 14),
+            ),
+            value: 'light',
+            groupValue: _selectedTheme,
+            onChanged: (value) {
+              setState(() {
+                _selectedTheme = value!;
+                // Theme change logic will be added later
+              });
             },
-          );
-        },
+            contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+            dense: true,
+          ),
+          // Dark mode radio button
+          RadioListTile<String>(
+            title: const Text(
+              'Dark Mode',
+              style: TextStyle(fontSize: 14),
+            ),
+            value: 'dark',
+            groupValue: _selectedTheme,
+            onChanged: (value) {
+              setState(() {
+                _selectedTheme = value!;
+                // Theme change logic will be added later
+              });
+            },
+            contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+            dense: true,
+          ),
+        ],
       ),
       actions: [
         TextButton(
-          child: const Text('Close'),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.of(context).pop();
           },
+          child: const Text('Close'),
+        ),
+        TextButton(
+          onPressed: () {
+            // Save settings logic will be implemented later
+            Navigator.of(context).pop();
+          },
+          child: const Text('Save'),
         ),
       ],
     );
