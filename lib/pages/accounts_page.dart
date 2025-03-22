@@ -1,5 +1,737 @@
+// import 'package:flutter/material.dart';
+// import '../widgets/sidebar.dart';
+
+// class AccountsPage extends StatefulWidget {
+//   const AccountsPage({super.key});
+
+//   @override
+//   State<AccountsPage> createState() => _AccountsPageState();
+// }
+
+// class _AccountsPageState extends State<AccountsPage> {
+//   bool isCollapsed = false; // State to track sidebar collapse
+//   final TextEditingController _oldPinController = TextEditingController();
+//   final TextEditingController _newPinController = TextEditingController();
+//   final TextEditingController _confirmPinController = TextEditingController();
+//   final TextEditingController _fidoPinController = TextEditingController();
+//   final TextEditingController _credentialPinController =
+//       TextEditingController();
+
+//   @override
+//   void dispose() {
+//     _oldPinController.dispose();
+//     _newPinController.dispose();
+//     _confirmPinController.dispose();
+//     _fidoPinController.dispose();
+//     _credentialPinController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Row(
+//         children: [
+//           Sidebar(
+//             isCollapsed: isCollapsed,
+//             onToggle: () {
+//               setState(() {
+//                 isCollapsed = !isCollapsed;
+//               });
+//             },
+//           ),
+//           Expanded(
+//             child: Container(
+//               decoration: BoxDecoration(
+//                 gradient: LinearGradient(
+//                   begin: Alignment.topCenter,
+//                   end: Alignment.bottomCenter,
+//                   colors: [
+//                     Colors.grey[200]!,
+//                     Colors.grey[350]!,
+//                     Colors.grey[400]!,
+//                   ],
+//                   stops: const [0.0, 0.6, 1.0],
+//                 ),
+//               ),
+//               child: Padding(
+//                 padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+//                 child: LayoutBuilder(builder: (context, constraints) {
+//                   return SingleChildScrollView(
+//                     physics: constraints.maxHeight < 600
+//                         ? const AlwaysScrollableScrollPhysics()
+//                         : const NeverScrollableScrollPhysics(),
+//                     child: Container(
+//                       constraints: BoxConstraints(
+//                         minHeight: constraints.maxHeight,
+//                       ),
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           // Header
+//                           Padding(
+//                             padding: const EdgeInsets.only(bottom: 12.0),
+//                             child: Text(
+//                               '',
+//                               style: TextStyle(
+//                                 fontSize: 28,
+//                                 fontWeight: FontWeight.bold,
+//                                 color: Colors.grey[800],
+//                                 letterSpacing: 0.5,
+//                               ),
+//                             ),
+//                           ),
+
+//                           // Get Started Card
+//                           _buildGetStartedCard(),
+//                           const SizedBox(height: 24),
+
+//                           // Action Buttons in a Row
+//                           Row(
+//                             children: [
+//                               Expanded(
+//                                 child: _buildActionButton(
+//                                     'PIN Management',
+//                                     Icons.pin_outlined,
+//                                     () => _showPinDialog(context)),
+//                               ),
+//                               const SizedBox(width: 12),
+//                               Expanded(
+//                                 child: _buildActionButton(
+//                                     'Fingerprint Management',
+//                                     Icons.fingerprint,
+//                                     () => _showFingerprintDialog(context)),
+//                               ),
+//                               const SizedBox(width: 12),
+//                               Expanded(
+//                                 child: _buildActionButton(
+//                                     'Credential Management',
+//                                     Icons.key_outlined,
+//                                     () => _showCredentialDialog(context)),
+//                               ),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   );
+//                 }),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildGetStartedCard() {
+//     return Container(
+//       decoration: BoxDecoration(
+//         color: Colors.grey[300],
+//         borderRadius: BorderRadius.circular(16),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.white.withOpacity(0.9),
+//             offset: const Offset(-3, -3),
+//             blurRadius: 6,
+//             spreadRadius: 1,
+//           ),
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.2),
+//             offset: const Offset(3, 3),
+//             blurRadius: 6,
+//             spreadRadius: 1,
+//           ),
+//         ],
+//         border: Border(
+//           bottom: BorderSide(color: Colors.blue.shade300, width: 1.5),
+//         ),
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   'Set up your authentication settings now',
+//                   style: TextStyle(
+//                     fontSize: 20,
+//                     fontWeight: FontWeight.bold,
+//                     color: Colors.grey[700],
+//                   ),
+//                 ),
+//                 Icon(
+//                   Icons.edit_outlined,
+//                   color: Colors.grey[600],
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 14),
+//             Text(
+//               'Add and manage authentication methods OATH / PIV / FIDO2 for your Security keys',
+//               style: TextStyle(
+//                 fontSize: 16,
+//                 color: Colors.grey[600],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildActionButton(String label, IconData icon, VoidCallback onTap) {
+//     return Container(
+//       height: 48, // Fixed height for all buttons
+//       decoration: BoxDecoration(
+//         color: Colors.grey[300],
+//         borderRadius: BorderRadius.circular(8),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.white.withOpacity(0.9),
+//             offset: const Offset(-2, -2),
+//             blurRadius: 5,
+//             spreadRadius: 1,
+//           ),
+//           BoxShadow(
+//             color: Colors.black.withOpacity(0.2),
+//             offset: const Offset(2, 2),
+//             blurRadius: 5,
+//             spreadRadius: 1,
+//           ),
+//         ],
+//       ),
+//       child: Material(
+//         color: Colors.transparent,
+//         child: InkWell(
+//           borderRadius: BorderRadius.circular(8),
+//           onTap: onTap,
+//           child: Center(
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Icon(icon, color: Colors.grey[700], size: 20),
+//                 const SizedBox(width: 8),
+//                 Text(
+//                   label,
+//                   style: TextStyle(
+//                     fontSize: 14,
+//                     fontWeight: FontWeight.w500,
+//                     color: Colors.grey[700],
+//                   ),
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   void _showPinDialog(BuildContext context) {
+//     // Clear controllers before showing dialog
+//     _oldPinController.clear();
+//     _newPinController.clear();
+//     _confirmPinController.clear();
+
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return Dialog(
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(8.0),
+//           ),
+//           child: Container(
+//             width: 400,
+//             padding: EdgeInsets.zero,
+//             decoration: BoxDecoration(
+//               color: Colors.white,
+//               borderRadius: BorderRadius.circular(8.0),
+//             ),
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min, // This helps reduce the height
+//               children: [
+//                 // Title with custom styling
+//                 Container(
+//                   width: double.infinity,
+//                   padding:
+//                       const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+//                   decoration: BoxDecoration(
+//                     color: Colors.white,
+//                     borderRadius: const BorderRadius.only(
+//                       topLeft: Radius.circular(8.0),
+//                       topRight: Radius.circular(8.0),
+//                     ),
+//                   ),
+//                   child: const Text(
+//                     '',
+//                     style: TextStyle(
+//                       fontWeight: FontWeight.bold,
+//                       fontSize: 16,
+//                     ),
+//                   ),
+//                 ),
+
+//                 // Content
+//                 Padding(
+//                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       const Text(
+//                         'Change PIN',
+//                         style: TextStyle(
+//                           fontSize: 14,
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                       const SizedBox(height: 12), // Reduced spacing
+//                       Row(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           const SizedBox(
+//                             width: 100,
+//                             child: Text(
+//                               'Old PIN:',
+//                               style: TextStyle(
+//                                 fontSize: 14,
+//                               ),
+//                               textAlign: TextAlign.right,
+//                             ),
+//                           ),
+//                           const SizedBox(width: 10),
+//                           Expanded(
+//                             child: TextField(
+//                               controller: _oldPinController,
+//                               decoration: InputDecoration(
+//                                 hintText: 'Please input old pin',
+//                                 hintStyle: TextStyle(
+//                                   fontSize: 13,
+//                                   color: Colors.grey[500],
+//                                 ),
+//                                 isDense: true,
+//                                 contentPadding: const EdgeInsets.symmetric(
+//                                     horizontal: 8,
+//                                     vertical: 8), // Reduced padding
+//                                 border: const UnderlineInputBorder(),
+//                                 enabledBorder: UnderlineInputBorder(
+//                                   borderSide: BorderSide(
+//                                     color: Colors.grey[400]!,
+//                                   ),
+//                                 ),
+//                               ),
+//                               style: const TextStyle(fontSize: 13),
+//                               obscureText: true,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       const SizedBox(height: 8), // Reduced spacing
+//                       Row(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           const SizedBox(
+//                             width: 100,
+//                             child: Text(
+//                               'New PIN:',
+//                               style: TextStyle(
+//                                 fontSize: 14,
+//                               ),
+//                               textAlign: TextAlign.right,
+//                             ),
+//                           ),
+//                           const SizedBox(width: 10),
+//                           Expanded(
+//                             child: TextField(
+//                               controller: _newPinController,
+//                               decoration: InputDecoration(
+//                                 hintText: 'Please input new pin',
+//                                 hintStyle: TextStyle(
+//                                   fontSize: 13,
+//                                   color: Colors.grey[500],
+//                                 ),
+//                                 isDense: true,
+//                                 contentPadding: const EdgeInsets.symmetric(
+//                                     horizontal: 8,
+//                                     vertical: 8), // Reduced padding
+//                                 border: const UnderlineInputBorder(),
+//                                 enabledBorder: UnderlineInputBorder(
+//                                   borderSide: BorderSide(
+//                                     color: Colors.grey[400]!,
+//                                   ),
+//                                 ),
+//                               ),
+//                               style: const TextStyle(fontSize: 13),
+//                               obscureText: true,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       const SizedBox(height: 8), // Reduced spacing
+//                       Row(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           const SizedBox(
+//                             width: 100,
+//                             child: Text(
+//                               'Confirm PIN:',
+//                               style: TextStyle(
+//                                 fontSize: 14,
+//                               ),
+//                               textAlign: TextAlign.right,
+//                             ),
+//                           ),
+//                           const SizedBox(width: 10),
+//                           Expanded(
+//                             child: TextField(
+//                               controller: _confirmPinController,
+//                               decoration: InputDecoration(
+//                                 hintText: 'Please input confirm pin',
+//                                 hintStyle: TextStyle(
+//                                   fontSize: 13,
+//                                   color: Colors.grey[500],
+//                                 ),
+//                                 isDense: true,
+//                                 contentPadding: const EdgeInsets.symmetric(
+//                                     horizontal: 8,
+//                                     vertical: 8), // Reduced padding
+//                                 border: const UnderlineInputBorder(),
+//                                 enabledBorder: UnderlineInputBorder(
+//                                   borderSide: BorderSide(
+//                                     color: Colors.grey[400]!,
+//                                   ),
+//                                 ),
+//                               ),
+//                               style: const TextStyle(fontSize: 13),
+//                               obscureText: true,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       const SizedBox(height: 20), // Reduced spacing
+//                     ],
+//                   ),
+//                 ),
+
+//                 // Actions
+//                 Container(
+//                   padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
+//                   alignment: Alignment.centerRight,
+//                   child: Row(
+//                     mainAxisSize: MainAxisSize.min,
+//                     children: [
+//                       TextButton(
+//                         onPressed: () {
+//                           Navigator.of(context).pop();
+//                         },
+//                         style: TextButton.styleFrom(
+//                           foregroundColor: Colors.black,
+//                           minimumSize:
+//                               const Size(60, 30), // Smaller button size
+//                           padding: const EdgeInsets.symmetric(horizontal: 8),
+//                         ),
+//                         child: const Text('Cancel'),
+//                       ),
+//                       TextButton(
+//                         onPressed: () {
+//                           // Validate and process PIN change
+//                           if (_newPinController.text ==
+//                               _confirmPinController.text) {
+//                             // Process PIN change
+//                             Navigator.of(context).pop();
+//                             // Show success message or handle further actions
+//                           } else {
+//                             // Show error that PINs don't match
+//                             ScaffoldMessenger.of(context).showSnackBar(
+//                               const SnackBar(
+//                                   content: Text(
+//                                       'New PIN and Confirm PIN do not match')),
+//                             );
+//                           }
+//                         },
+//                         style: TextButton.styleFrom(
+//                           foregroundColor: Colors.black,
+//                           minimumSize:
+//                               const Size(60, 30), // Smaller button size
+//                           padding: const EdgeInsets.symmetric(horizontal: 8),
+//                         ),
+//                         child: const Text('OK'),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   void _showFingerprintDialog(BuildContext context) {
+//     // Clear controller before showing dialog
+//     _fidoPinController.clear();
+
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return Dialog(
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(8.0),
+//           ),
+//           backgroundColor:
+//               Colors.grey[100], // Light grey background as shown in image
+//           child: Container(
+//             width: 350, // Smaller width to match the image
+//             padding: EdgeInsets.zero,
+//             decoration: BoxDecoration(
+//               color: Colors.grey[100], // Light grey background
+//               borderRadius: BorderRadius.circular(8.0),
+//             ),
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min, // This helps reduce the height
+//               children: [
+//                 // Title with bold text
+//                 Padding(
+//                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+//                   child: Align(
+//                     alignment: Alignment.centerLeft,
+//                     child: Text(
+//                       'Verify FIDO',
+//                       style: TextStyle(
+//                         fontSize: 16,
+//                         fontWeight: FontWeight.bold, // Changed to bold
+//                         color: Colors.grey[800],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+
+//                 // Content
+//                 Padding(
+//                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+//                   child: Column(
+//                     children: [
+//                       // FIDO2 PIN input
+//                       Row(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           // Label
+//                           Text(
+//                             'FIDO2 PIN:',
+//                             style: TextStyle(
+//                               fontSize: 14,
+//                               fontWeight: FontWeight.w500,
+//                               color: Colors.grey[800],
+//                             ),
+//                           ),
+//                           const SizedBox(width: 10),
+//                           // Input field
+//                           Expanded(
+//                             child: TextField(
+//                               controller: _fidoPinController,
+//                               decoration: InputDecoration(
+//                                 hintText: 'Please input FIDO PIN',
+//                                 hintStyle: TextStyle(
+//                                   fontSize: 13,
+//                                   color: Colors.grey[500],
+//                                 ),
+//                                 isDense: true,
+//                                 contentPadding: const EdgeInsets.symmetric(
+//                                     horizontal: 8, vertical: 8),
+//                                 border: const UnderlineInputBorder(),
+//                                 enabledBorder: UnderlineInputBorder(
+//                                   borderSide: BorderSide(
+//                                     color: Colors.grey[400]!,
+//                                   ),
+//                                 ),
+//                               ),
+//                               style: const TextStyle(fontSize: 13),
+//                               obscureText: true,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       const SizedBox(height: 20),
+
+//                       // Actions
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.end,
+//                         children: [
+//                           TextButton(
+//                             onPressed: () {
+//                               Navigator.of(context).pop();
+//                             },
+//                             style: TextButton.styleFrom(
+//                               foregroundColor: Colors.grey[800],
+//                               minimumSize: const Size(60, 30),
+//                               padding:
+//                                   const EdgeInsets.symmetric(horizontal: 8),
+//                             ),
+//                             child: const Text('Cancel'),
+//                           ),
+//                           TextButton(
+//                             onPressed: () {
+//                               // Process FIDO verification
+//                               Navigator.of(context).pop();
+//                             },
+//                             style: TextButton.styleFrom(
+//                               foregroundColor: Colors.grey[800],
+//                               minimumSize: const Size(60, 30),
+//                               padding:
+//                                   const EdgeInsets.symmetric(horizontal: 8),
+//                             ),
+//                             child: const Text('OK'),
+//                           ),
+//                         ],
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   void _showCredentialDialog(BuildContext context) {
+//     // Clear controller before showing dialog
+//     _credentialPinController.clear();
+
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return Dialog(
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(8.0),
+//           ),
+//           backgroundColor: Colors.grey[100],
+//           child: Container(
+//             width: 350,
+//             padding: EdgeInsets.zero,
+//             decoration: BoxDecoration(
+//               color: Colors.grey[100],
+//               borderRadius: BorderRadius.circular(8.0),
+//             ),
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 // Title
+//                 Padding(
+//                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
+//                   child: Align(
+//                     alignment: Alignment.centerLeft,
+//                     child: Text(
+//                       'Verify Credential',
+//                       style: TextStyle(
+//                         fontSize: 16,
+//                         fontWeight: FontWeight.bold,
+//                         color: Colors.grey[800],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+
+//                 // Content
+//                 Padding(
+//                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+//                   child: Column(
+//                     children: [
+//                       // Credential PIN input
+//                       Row(
+//                         crossAxisAlignment: CrossAxisAlignment.center,
+//                         children: [
+//                           // Label
+//                           Text(
+//                             'Credential PIN:',
+//                             style: TextStyle(
+//                               fontSize: 14,
+//                               fontWeight: FontWeight.w500,
+//                               color: Colors.grey[800],
+//                             ),
+//                           ),
+//                           const SizedBox(width: 10),
+//                           // Input field
+//                           Expanded(
+//                             child: TextField(
+//                               controller: _credentialPinController,
+//                               decoration: InputDecoration(
+//                                 hintText: 'Please input FIDO PIN',
+//                                 hintStyle: TextStyle(
+//                                   fontSize: 13,
+//                                   color: Colors.grey[500],
+//                                 ),
+//                                 isDense: true,
+//                                 contentPadding: const EdgeInsets.symmetric(
+//                                     horizontal: 8, vertical: 8),
+//                                 border: const UnderlineInputBorder(),
+//                                 enabledBorder: UnderlineInputBorder(
+//                                   borderSide: BorderSide(
+//                                     color: Colors.grey[400]!,
+//                                   ),
+//                                 ),
+//                               ),
+//                               style: const TextStyle(fontSize: 13),
+//                               obscureText: true,
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                       const SizedBox(height: 20),
+
+//                       // Actions
+//                       Row(
+//                         mainAxisAlignment: MainAxisAlignment.end,
+//                         children: [
+//                           TextButton(
+//                             onPressed: () {
+//                               Navigator.of(context).pop();
+//                             },
+//                             style: TextButton.styleFrom(
+//                               foregroundColor: Colors.grey[800],
+//                               minimumSize: const Size(60, 30),
+//                               padding:
+//                                   const EdgeInsets.symmetric(horizontal: 8),
+//                             ),
+//                             child: const Text('Cancel'),
+//                           ),
+//                           TextButton(
+//                             onPressed: () {
+//                               // Process Credential verification
+//                               Navigator.of(context).pop();
+//                             },
+//                             style: TextButton.styleFrom(
+//                               foregroundColor: Colors.grey[800],
+//                               minimumSize: const Size(60, 30),
+//                               padding:
+//                                   const EdgeInsets.symmetric(horizontal: 8),
+//                             ),
+//                             child: const Text('OK'),
+//                           ),
+//                         ],
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import '../widgets/sidebar.dart';
+import 'package:provider/provider.dart';
+import '../theme_provider.dart';
 
 class AccountsPage extends StatefulWidget {
   const AccountsPage({super.key});
@@ -29,7 +761,50 @@ class _AccountsPageState extends State<AccountsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme mode using Provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
+    // Define colors based on theme
+    final backgroundColor =
+        isDarkMode ? const Color(0xFF111111) : Colors.grey[200]!;
+
+    // Create a gradient for light/dark mode
+    final gradientColors = isDarkMode
+        ? [
+            const Color(0xFF1A1A1A),
+            const Color(0xFF101010),
+            const Color(0xFF080808),
+          ]
+        : [
+            Colors.grey[200]!,
+            Colors.grey[350]!,
+            Colors.grey[400]!,
+          ];
+
+    final textColor = isDarkMode ? Colors.white : Colors.grey[800]!;
+    final cardColor = isDarkMode ? const Color(0xFF272727) : Colors.grey[300]!;
+    final buttonColor =
+        isDarkMode ? const Color(0xFF272727) : Colors.grey[300]!;
+
+    // Shadow colors for neumorphic effect
+    final cardShadowLight = isDarkMode
+        ? Colors.white.withOpacity(0.05)
+        : Colors.white.withOpacity(0.9);
+
+    final cardShadowDark = isDarkMode
+        ? Colors.black.withOpacity(0.7)
+        : Colors.black.withOpacity(0.2);
+
+    // Dialog colors
+    final dialogColor =
+        isDarkMode ? const Color(0xFF202020) : Colors.grey[100]!;
+    final dialogTextColor = isDarkMode ? Colors.white : Colors.grey[800]!;
+    final dialogBorderColor =
+        isDarkMode ? Colors.grey[700]! : Colors.grey[400]!;
+
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: Row(
         children: [
           Sidebar(
@@ -46,11 +821,7 @@ class _AccountsPageState extends State<AccountsPage> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.grey[200]!,
-                    Colors.grey[350]!,
-                    Colors.grey[400]!,
-                  ],
+                  colors: gradientColors,
                   stops: const [0.0, 0.6, 1.0],
                 ),
               ),
@@ -72,18 +843,24 @@ class _AccountsPageState extends State<AccountsPage> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
                             child: Text(
-                              '',
+                              'Account',
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey[800],
+                                color: textColor,
                                 letterSpacing: 0.5,
                               ),
                             ),
                           ),
 
                           // Get Started Card
-                          _buildGetStartedCard(),
+                          _buildGetStartedCard(
+                            cardColor: cardColor,
+                            cardShadowLight: cardShadowLight,
+                            cardShadowDark: cardShadowDark,
+                            textColor: textColor,
+                            isDarkMode: isDarkMode,
+                          ),
                           const SizedBox(height: 24),
 
                           // Action Buttons in a Row
@@ -91,23 +868,56 @@ class _AccountsPageState extends State<AccountsPage> {
                             children: [
                               Expanded(
                                 child: _buildActionButton(
-                                    'PIN Management',
-                                    Icons.pin_outlined,
-                                    () => _showPinDialog(context)),
+                                  'PIN Management',
+                                  Icons.pin_outlined,
+                                  () => _showPinDialog(
+                                    context,
+                                    dialogColor,
+                                    dialogTextColor,
+                                    dialogBorderColor,
+                                    isDarkMode,
+                                  ),
+                                  buttonColor: buttonColor,
+                                  cardShadowLight: cardShadowLight,
+                                  cardShadowDark: cardShadowDark,
+                                  textColor: textColor,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildActionButton(
-                                    'Fingerprint Management',
-                                    Icons.fingerprint,
-                                    () => _showFingerprintDialog(context)),
+                                  'Fingerprint Management',
+                                  Icons.fingerprint,
+                                  () => _showFingerprintDialog(
+                                    context,
+                                    dialogColor,
+                                    dialogTextColor,
+                                    dialogBorderColor,
+                                    isDarkMode,
+                                  ),
+                                  buttonColor: buttonColor,
+                                  cardShadowLight: cardShadowLight,
+                                  cardShadowDark: cardShadowDark,
+                                  textColor: textColor,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: _buildActionButton(
-                                    'Credential Management',
-                                    Icons.key_outlined,
-                                    () => _showCredentialDialog(context)),
+                                  'Credential Management',
+                                  Icons.key_outlined,
+                                  () => _showCredentialDialog(
+                                    context,
+                                    dialogColor,
+                                    dialogTextColor,
+                                    dialogBorderColor,
+                                    isDarkMode,
+                                  ),
+                                  buttonColor: buttonColor,
+                                  cardShadowLight: cardShadowLight,
+                                  cardShadowDark: cardShadowDark,
+                                  textColor: textColor,
+                                ),
                               ),
                             ],
                           ),
@@ -124,27 +934,35 @@ class _AccountsPageState extends State<AccountsPage> {
     );
   }
 
-  Widget _buildGetStartedCard() {
+  Widget _buildGetStartedCard({
+    required Color cardColor,
+    required Color cardShadowLight,
+    required Color cardShadowDark,
+    required Color textColor,
+    required bool isDarkMode,
+  }) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(0.9),
+            color: cardShadowLight,
             offset: const Offset(-3, -3),
             blurRadius: 6,
             spreadRadius: 1,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: cardShadowDark,
             offset: const Offset(3, 3),
             blurRadius: 6,
             spreadRadius: 1,
           ),
         ],
         border: Border(
-          bottom: BorderSide(color: Colors.blue.shade300, width: 1.5),
+          bottom: BorderSide(
+              color: isDarkMode ? Colors.blue.shade700 : Colors.blue.shade300,
+              width: 1.5),
         ),
       ),
       child: Padding(
@@ -160,12 +978,12 @@ class _AccountsPageState extends State<AccountsPage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[700],
+                    color: textColor,
                   ),
                 ),
                 Icon(
                   Icons.edit_outlined,
-                  color: Colors.grey[600],
+                  color: textColor.withOpacity(0.8),
                 ),
               ],
             ),
@@ -174,7 +992,7 @@ class _AccountsPageState extends State<AccountsPage> {
               'Add and manage authentication methods OATH / PIV / FIDO2 for your Security keys',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.grey[600],
+                color: textColor.withOpacity(0.8),
               ),
             ),
           ],
@@ -183,21 +1001,29 @@ class _AccountsPageState extends State<AccountsPage> {
     );
   }
 
-  Widget _buildActionButton(String label, IconData icon, VoidCallback onTap) {
+  Widget _buildActionButton(
+    String label,
+    IconData icon,
+    VoidCallback onTap, {
+    required Color buttonColor,
+    required Color cardShadowLight,
+    required Color cardShadowDark,
+    required Color textColor,
+  }) {
     return Container(
       height: 48, // Fixed height for all buttons
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: buttonColor,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.white.withOpacity(0.9),
+            color: cardShadowLight,
             offset: const Offset(-2, -2),
             blurRadius: 5,
             spreadRadius: 1,
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: cardShadowDark,
             offset: const Offset(2, 2),
             blurRadius: 5,
             spreadRadius: 1,
@@ -213,14 +1039,14 @@ class _AccountsPageState extends State<AccountsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, color: Colors.grey[700], size: 20),
+                Icon(icon, color: textColor, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   label,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
+                    color: textColor,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -232,7 +1058,13 @@ class _AccountsPageState extends State<AccountsPage> {
     );
   }
 
-  void _showPinDialog(BuildContext context) {
+  void _showPinDialog(
+    BuildContext context,
+    Color dialogColor,
+    Color textColor,
+    Color borderColor,
+    bool isDarkMode,
+  ) {
     // Clear controllers before showing dialog
     _oldPinController.clear();
     _newPinController.clear();
@@ -245,11 +1077,12 @@ class _AccountsPageState extends State<AccountsPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
+          backgroundColor: dialogColor,
           child: Container(
             width: 400,
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: dialogColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Column(
@@ -261,17 +1094,18 @@ class _AccountsPageState extends State<AccountsPage> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: dialogColor,
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(8.0),
                       topRight: Radius.circular(8.0),
                     ),
                   ),
-                  child: const Text(
+                  child: Text(
                     '',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
+                      color: textColor,
                     ),
                   ),
                 ),
@@ -282,23 +1116,25 @@ class _AccountsPageState extends State<AccountsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Change PIN',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: textColor,
                         ),
                       ),
                       const SizedBox(height: 12), // Reduced spacing
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 100,
                             child: Text(
                               'Old PIN:',
                               style: TextStyle(
                                 fontSize: 14,
+                                color: textColor,
                               ),
                               textAlign: TextAlign.right,
                             ),
@@ -311,35 +1147,35 @@ class _AccountsPageState extends State<AccountsPage> {
                                 hintText: 'Please input old pin',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[500],
+                                  color: textColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 8), // Reduced padding
+                                    horizontal: 8, vertical: 8),
                                 border: const UnderlineInputBorder(),
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Colors.grey[400]!,
+                                    color: borderColor,
                                   ),
                                 ),
                               ),
-                              style: const TextStyle(fontSize: 13),
+                              style: TextStyle(fontSize: 13, color: textColor),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8), // Reduced spacing
+                      const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 100,
                             child: Text(
                               'New PIN:',
                               style: TextStyle(
                                 fontSize: 14,
+                                color: textColor,
                               ),
                               textAlign: TextAlign.right,
                             ),
@@ -352,35 +1188,35 @@ class _AccountsPageState extends State<AccountsPage> {
                                 hintText: 'Please input new pin',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[500],
+                                  color: textColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 8), // Reduced padding
+                                    horizontal: 8, vertical: 8),
                                 border: const UnderlineInputBorder(),
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Colors.grey[400]!,
+                                    color: borderColor,
                                   ),
                                 ),
                               ),
-                              style: const TextStyle(fontSize: 13),
+                              style: TextStyle(fontSize: 13, color: textColor),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8), // Reduced spacing
+                      const SizedBox(height: 8),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const SizedBox(
+                          SizedBox(
                             width: 100,
                             child: Text(
                               'Confirm PIN:',
                               style: TextStyle(
                                 fontSize: 14,
+                                color: textColor,
                               ),
                               textAlign: TextAlign.right,
                             ),
@@ -393,26 +1229,25 @@ class _AccountsPageState extends State<AccountsPage> {
                                 hintText: 'Please input confirm pin',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[500],
+                                  color: textColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 8), // Reduced padding
+                                    horizontal: 8, vertical: 8),
                                 border: const UnderlineInputBorder(),
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Colors.grey[400]!,
+                                    color: borderColor,
                                   ),
                                 ),
                               ),
-                              style: const TextStyle(fontSize: 13),
+                              style: TextStyle(fontSize: 13, color: textColor),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20), // Reduced spacing
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -429,9 +1264,8 @@ class _AccountsPageState extends State<AccountsPage> {
                           Navigator.of(context).pop();
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          minimumSize:
-                              const Size(60, 30), // Smaller button size
+                          foregroundColor: textColor,
+                          minimumSize: const Size(60, 30),
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
                         child: const Text('Cancel'),
@@ -447,16 +1281,25 @@ class _AccountsPageState extends State<AccountsPage> {
                           } else {
                             // Show error that PINs don't match
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      'New PIN and Confirm PIN do not match')),
+                              SnackBar(
+                                content: Text(
+                                  'New PIN and Confirm PIN do not match',
+                                  style: TextStyle(
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                                ),
+                                backgroundColor: isDarkMode
+                                    ? Colors.grey[800]
+                                    : Colors.grey[300],
+                              ),
                             );
                           }
                         },
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          minimumSize:
-                              const Size(60, 30), // Smaller button size
+                          foregroundColor: textColor,
+                          minimumSize: const Size(60, 30),
                           padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
                         child: const Text('OK'),
@@ -472,7 +1315,13 @@ class _AccountsPageState extends State<AccountsPage> {
     );
   }
 
-  void _showFingerprintDialog(BuildContext context) {
+  void _showFingerprintDialog(
+    BuildContext context,
+    Color dialogColor,
+    Color textColor,
+    Color borderColor,
+    bool isDarkMode,
+  ) {
     // Clear controller before showing dialog
     _fidoPinController.clear();
 
@@ -483,13 +1332,12 @@ class _AccountsPageState extends State<AccountsPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          backgroundColor:
-              Colors.grey[100], // Light grey background as shown in image
+          backgroundColor: dialogColor,
           child: Container(
             width: 350, // Smaller width to match the image
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
-              color: Colors.grey[100], // Light grey background
+              color: dialogColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Column(
@@ -504,8 +1352,8 @@ class _AccountsPageState extends State<AccountsPage> {
                       'Verify FIDO',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.bold, // Changed to bold
-                        color: Colors.grey[800],
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -526,7 +1374,7 @@ class _AccountsPageState extends State<AccountsPage> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.grey[800],
+                              color: textColor,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -538,7 +1386,7 @@ class _AccountsPageState extends State<AccountsPage> {
                                 hintText: 'Please input FIDO PIN',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[500],
+                                  color: textColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
@@ -546,11 +1394,11 @@ class _AccountsPageState extends State<AccountsPage> {
                                 border: const UnderlineInputBorder(),
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Colors.grey[400]!,
+                                    color: borderColor,
                                   ),
                                 ),
                               ),
-                              style: const TextStyle(fontSize: 13),
+                              style: TextStyle(fontSize: 13, color: textColor),
                               obscureText: true,
                             ),
                           ),
@@ -567,7 +1415,7 @@ class _AccountsPageState extends State<AccountsPage> {
                               Navigator.of(context).pop();
                             },
                             style: TextButton.styleFrom(
-                              foregroundColor: Colors.grey[800],
+                              foregroundColor: textColor,
                               minimumSize: const Size(60, 30),
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
@@ -580,7 +1428,7 @@ class _AccountsPageState extends State<AccountsPage> {
                               Navigator.of(context).pop();
                             },
                             style: TextButton.styleFrom(
-                              foregroundColor: Colors.grey[800],
+                              foregroundColor: textColor,
                               minimumSize: const Size(60, 30),
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
@@ -600,7 +1448,13 @@ class _AccountsPageState extends State<AccountsPage> {
     );
   }
 
-  void _showCredentialDialog(BuildContext context) {
+  void _showCredentialDialog(
+    BuildContext context,
+    Color dialogColor,
+    Color textColor,
+    Color borderColor,
+    bool isDarkMode,
+  ) {
     // Clear controller before showing dialog
     _credentialPinController.clear();
 
@@ -611,12 +1465,12 @@ class _AccountsPageState extends State<AccountsPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          backgroundColor: Colors.grey[100],
+          backgroundColor: dialogColor,
           child: Container(
             width: 350,
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: dialogColor,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Column(
@@ -632,7 +1486,7 @@ class _AccountsPageState extends State<AccountsPage> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -653,7 +1507,7 @@ class _AccountsPageState extends State<AccountsPage> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.grey[800],
+                              color: textColor,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -662,10 +1516,10 @@ class _AccountsPageState extends State<AccountsPage> {
                             child: TextField(
                               controller: _credentialPinController,
                               decoration: InputDecoration(
-                                hintText: 'Please input FIDO PIN',
+                                hintText: 'Please input Credential PIN',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: Colors.grey[500],
+                                  color: textColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
@@ -673,11 +1527,11 @@ class _AccountsPageState extends State<AccountsPage> {
                                 border: const UnderlineInputBorder(),
                                 enabledBorder: UnderlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: Colors.grey[400]!,
+                                    color: borderColor,
                                   ),
                                 ),
                               ),
-                              style: const TextStyle(fontSize: 13),
+                              style: TextStyle(fontSize: 13, color: textColor),
                               obscureText: true,
                             ),
                           ),
@@ -694,7 +1548,7 @@ class _AccountsPageState extends State<AccountsPage> {
                               Navigator.of(context).pop();
                             },
                             style: TextButton.styleFrom(
-                              foregroundColor: Colors.grey[800],
+                              foregroundColor: textColor,
                               minimumSize: const Size(60, 30),
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
@@ -707,7 +1561,7 @@ class _AccountsPageState extends State<AccountsPage> {
                               Navigator.of(context).pop();
                             },
                             style: TextButton.styleFrom(
-                              foregroundColor: Colors.grey[800],
+                              foregroundColor: textColor,
                               minimumSize: const Size(60, 30),
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 8),
