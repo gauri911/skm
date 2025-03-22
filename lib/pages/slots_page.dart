@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../widgets/sidebar.dart';
+import 'package:provider/provider.dart';
+import '../theme_provider.dart';
 
 class SlotsPage extends StatefulWidget {
-  const SlotsPage({Key? key}) : super(key: key);
+  const SlotsPage({super.key});
 
   @override
   State<SlotsPage> createState() => _SlotsPageState();
@@ -19,7 +21,37 @@ class _SlotsPageState extends State<SlotsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme mode using Provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.isDarkMode;
+
+    // Define colors based on theme - using darker greys for both themes
+    final backgroundColor = isDarkMode ? Colors.grey[900]! : Colors.grey[300]!;
+    final gradientColors = isDarkMode
+        ? [
+            const Color.fromARGB(255, 22, 22, 22)!,
+            const Color.fromARGB(255, 37, 37, 37)!,
+            Colors.grey[800]!,
+          ]
+        : [
+            Colors.grey[300]!,
+            Colors.grey[400]!,
+            Colors.grey[500]!,
+          ];
+    final textColor = isDarkMode ? Colors.grey[100]! : Colors.grey[900]!;
+    final cardColor = isDarkMode ? Colors.grey[800]! : Colors.grey[350]!;
+    final cardShadowLight = isDarkMode
+        ? Colors.black.withOpacity(0.3)
+        : Colors.white.withOpacity(0.9);
+    final cardShadowDark = isDarkMode
+        ? Colors.black.withOpacity(0.5)
+        : Colors.black.withOpacity(0.2);
+    final numberBgColor = isDarkMode ? Colors.grey[600]! : Colors.grey[700]!;
+    final optionTextColor = isDarkMode ? Colors.grey[200]! : Colors.grey[800]!;
+
     return Scaffold(
+      // Use the theme's background color for Scaffold
+      backgroundColor: backgroundColor,
       body: Row(
         children: [
           // Include the sidebar
@@ -38,11 +70,7 @@ class _SlotsPageState extends State<SlotsPage> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.grey[200]!,
-                    Colors.grey[350]!,
-                    Colors.grey[400]!,
-                  ],
+                  colors: gradientColors,
                   stops: const [0.0, 0.6, 1.0],
                 ),
               ),
@@ -59,7 +87,7 @@ class _SlotsPageState extends State<SlotsPage> {
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
+                          color: textColor,
                           letterSpacing: 0.5,
                         ),
                       ),
@@ -85,6 +113,11 @@ class _SlotsPageState extends State<SlotsPage> {
                                       print(
                                           'Selected option: ${options[0]['title']}');
                                     },
+                                    cardColor: cardColor,
+                                    cardShadowLight: cardShadowLight,
+                                    cardShadowDark: cardShadowDark,
+                                    numberBgColor: numberBgColor,
+                                    optionTextColor: optionTextColor,
                                   ),
                                 ],
                               ),
@@ -104,6 +137,11 @@ class _SlotsPageState extends State<SlotsPage> {
                                       print(
                                           'Selected option: ${options[1]['title']}');
                                     },
+                                    cardColor: cardColor,
+                                    cardShadowLight: cardShadowLight,
+                                    cardShadowDark: cardShadowDark,
+                                    numberBgColor: numberBgColor,
+                                    optionTextColor: optionTextColor,
                                   ),
                                 ],
                               ),
@@ -126,6 +164,11 @@ class _SlotsPageState extends State<SlotsPage> {
     required String number,
     required String title,
     required VoidCallback onTap,
+    required Color cardColor,
+    required Color cardShadowLight,
+    required Color cardShadowDark,
+    required Color numberBgColor,
+    required Color optionTextColor,
   }) {
     return InkWell(
       onTap: onTap,
@@ -133,17 +176,17 @@ class _SlotsPageState extends State<SlotsPage> {
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-          color: Colors.grey[300],
+          color: cardColor,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.white.withOpacity(0.9),
+              color: cardShadowLight,
               offset: const Offset(-2, -2),
               blurRadius: 4,
               spreadRadius: 1,
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: cardShadowDark,
               offset: const Offset(2, 2),
               blurRadius: 4,
               spreadRadius: 1,
@@ -159,7 +202,7 @@ class _SlotsPageState extends State<SlotsPage> {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: Colors.grey[600],
+                  color: numberBgColor,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -179,7 +222,7 @@ class _SlotsPageState extends State<SlotsPage> {
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: Colors.grey[700],
+                    color: optionTextColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
