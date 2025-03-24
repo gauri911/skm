@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../widgets/sidebar.dart';
 import 'dart:math' as math;
+import 'package:provider/provider.dart';
+import '../theme_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -1143,147 +1145,196 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // Remove the AppBar completely to eliminate the hamburger icon
-      body: Row(
-        children: [
-          Sidebar(
-            isCollapsed: isCollapsed, // Sidebar width controlled dynamically
-            onToggle: () {
-              setState(() {
-                isCollapsed = !isCollapsed; // Toggle sidebar collapse
-              });
-            },
-          ),
-          Expanded(
-            child: Container(
-              // Remove any height constraints to match sidebar height
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.grey[200]!,
-                    Colors.grey[350]!,
-                    Colors.grey[400]!,
-                  ],
-                  stops: [0.0, 0.6, 1.0],
+    // Use Consumer to listen to theme changes
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return Scaffold(
+          body: Row(
+            children: [
+              Sidebar(
+                isCollapsed: isCollapsed,
+                onToggle: () {
+                  setState(() {
+                    isCollapsed = !isCollapsed;
+                  });
+                },
+              ),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: themeProvider.isDarkMode
+                          ? [
+                              Colors.grey[900]!,
+                              Colors.grey[800]!,
+                              Colors.grey[700]!,
+                            ]
+                          : [
+                              Colors.grey[200]!,
+                              Colors.grey[350]!,
+                              Colors.grey[400]!,
+                            ],
+                      stops: [0.0, 0.6, 1.0],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        physics: constraints.maxHeight < 600
+                            ? AlwaysScrollableScrollPhysics()
+                            : NeverScrollableScrollPhysics(),
+                        child: Container(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Text(
+                                  'Home',
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    color: themeProvider.isDarkMode
+                                        ? Colors.grey[300]
+                                        : Colors.grey[800],
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                              // Modify existing widgets to use theme-aware colors
+                              _buildEmbossedCard(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        securityKeyName,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: themeProvider.isDarkMode
+                                              ? Colors.white70
+                                              : Colors.black54,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    InkWell(
+                                      onTap: _showEditDialog,
+                                      child: Icon(
+                                        Icons.edit_outlined,
+                                        color: themeProvider.isDarkMode
+                                            ? Colors.white54
+                                            : Colors.black45,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                bottomBorder: true,
+                                isDarkMode: themeProvider.isDarkMode,
+                              ),
+                              SizedBox(height: 10),
+                              _buildDataRows(themeProvider.isDarkMode),
+                              SizedBox(height: 24),
+                              Center(
+                                child: AnimatedBuilder(
+                                  animation: _animationController,
+                                  builder: (context, child) {
+                                    return Transform(
+                                      alignment: Alignment.center,
+                                      transform: Matrix4.identity()
+                                        ..rotateZ(_rotationAnimation.value)
+                                        ..scale(_scaleAnimation.value),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: (themeProvider.isDarkMode
+                                                      ? Colors.blue.shade900
+                                                      : Colors.blue)
+                                                  .withOpacity(0.2 +
+                                                      0.1 *
+                                                          _animationController
+                                                              .value),
+                                              blurRadius: 20 *
+                                                  _animationController.value,
+                                              spreadRadius: 5 *
+                                                  _animationController.value,
+                                            ),
+                                          ],
+                                        ),
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                                  child: Image.asset(
+                                    'assets/usb_security_key.png',
+                                    height: 180,
+                                    width: 210,
+                                    color: themeProvider.isDarkMode
+                                        ? Colors.white70
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
                 ),
               ),
-              child: Padding(
-                // Reduced top padding to move everything up
-                padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 16.0),
-                // Use LayoutBuilder to get the available height
-                child: LayoutBuilder(builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    // Set physics to allow scrolling only when content exceeds height
-                    physics: constraints.maxHeight < 600
-                        ? AlwaysScrollableScrollPhysics()
-                        : NeverScrollableScrollPhysics(),
-                    child: Container(
-                      // Set minimum height to match available height
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Add Home text at the top with reduced bottom padding
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
-                            child: Text(
-                              'Home',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[800], // Dark grey color
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                          ),
-                          _buildEmbossedCard(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    securityKeyName,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                ),
-                                SizedBox(width: 8),
-                                InkWell(
-                                  onTap: _showEditDialog,
-                                  child: Icon(Icons.edit_outlined,
-                                      color: Colors.black45, size: 20),
-                                ),
-                              ],
-                            ),
-                            bottomBorder: true,
-                          ),
-                          // Reduced spacing between elements
-                          SizedBox(height: 10),
-                          _buildDataRows(),
-                          // Added more spacing before the animation
-                          SizedBox(height: 24),
-                          Center(
-                            // Wrap image in AnimatedBuilder to animate it
-                            child: AnimatedBuilder(
-                              animation: _animationController,
-                              builder: (context, child) {
-                                return Transform(
-                                  alignment: Alignment.center,
-                                  // Apply both rotation and scaling animations
-                                  transform: Matrix4.identity()
-                                    ..rotateZ(_rotationAnimation.value)
-                                    ..scale(_scaleAnimation.value),
-                                  child: Container(
-                                    // Add a soft glow animation around the key
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.blue.withOpacity(0.2 +
-                                              0.1 * _animationController.value),
-                                          blurRadius:
-                                              20 * _animationController.value,
-                                          spreadRadius:
-                                              5 * _animationController.value,
-                                        ),
-                                      ],
-                                    ),
-                                    child: child,
-                                  ),
-                                );
-                              },
-                              child: Image.asset(
-                                'assets/usb_security_key.png',
-                                height: 180,
-                                width: 210,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildDataRows() {
+// Add this method before _buildDataRows method
+  Widget _buildInfoTile(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white70
+                : Colors.black54,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Modify _buildDataRows to accept isDarkMode
+  Widget _buildDataRows(bool isDarkMode) {
     return Column(
       children: [
         Row(
@@ -1291,17 +1342,18 @@ class _HomePageState extends State<HomePage>
             Expanded(
               child: _buildEmbossedCard(
                 child: _buildInfoTile('PID & VID', '045D&6789E'),
+                isDarkMode: isDarkMode,
               ),
             ),
             SizedBox(width: 12),
             Expanded(
               child: _buildEmbossedCard(
                 child: _buildInfoTile('CosVersion No', '1600'),
+                isDarkMode: isDarkMode,
               ),
             ),
           ],
         ),
-        // Reduced spacing between rows
         SizedBox(height: 10),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1316,28 +1368,36 @@ class _HomePageState extends State<HomePage>
                         'Support Functions',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black54,
+                          color: isDarkMode ? Colors.white70 : Colors.black54,
                           fontWeight: FontWeight.bold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 12),
-                      Text('U2F',
-                          style: TextStyle(fontSize: 16, color: Colors.black54),
-                          overflow: TextOverflow.ellipsis),
+                      Text(
+                        'U2F',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDarkMode ? Colors.white70 : Colors.black54,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       SizedBox(height: 8),
-                      Text('FIDO2',
-                          style: TextStyle(fontSize: 16, color: Colors.black54),
-                          overflow: TextOverflow.ellipsis),
-                      // Add more dummy functions to increase the height
+                      Text(
+                        'FIDO2',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: isDarkMode ? Colors.white70 : Colors.black54,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       SizedBox(height: 8),
-
                       SizedBox(height: 16),
                     ],
                   ),
                 ),
-                padding:
-                    EdgeInsets.all(12), // Match padding with interfaces box
+                padding: EdgeInsets.all(12),
+                isDarkMode: isDarkMode,
               ),
             ),
             SizedBox(width: 12),
@@ -1350,7 +1410,7 @@ class _HomePageState extends State<HomePage>
                       'Applications',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.black54,
+                        color: isDarkMode ? Colors.white70 : Colors.black54,
                         fontWeight: FontWeight.bold,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -1358,22 +1418,25 @@ class _HomePageState extends State<HomePage>
                     SizedBox(height: 12),
                     Row(
                       children: [
-                        Expanded(child: _buildClickableChip('FIDO')),
+                        Expanded(
+                            child: _buildClickableChip('FIDO', isDarkMode)),
                         SizedBox(width: 8),
-                        Expanded(child: _buildClickableChip('PIV')),
+                        Expanded(child: _buildClickableChip('PIV', isDarkMode)),
                       ],
                     ),
                     SizedBox(height: 8),
                     Row(
                       children: [
-                        Expanded(child: _buildClickableChip('CCID')),
+                        Expanded(
+                            child: _buildClickableChip('CCID', isDarkMode)),
                         SizedBox(width: 8),
-                        Expanded(child: _buildClickableChip('OTP')),
+                        Expanded(child: _buildClickableChip('OTP', isDarkMode)),
                       ],
                     ),
                   ],
                 ),
                 padding: EdgeInsets.all(12),
+                isDarkMode: isDarkMode,
               ),
             ),
           ],
@@ -1382,64 +1445,31 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Widget _buildInfoTile(String title, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(
-                title,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            SizedBox(width: 4),
-            InkWell(
-              onTap: () => _copyToClipboard(value, title),
-              child: Icon(Icons.content_copy_outlined,
-                  color: Colors.black45, size: 18),
-            ),
-          ],
-        ),
-        SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(fontSize: 16, color: Colors.black54),
-          overflow: TextOverflow.ellipsis,
-        ),
-      ],
-    );
-  }
-
+  // Modify other methods to support dark mode
   Widget _buildEmbossedCard({
     required Widget child,
     bool bottomBorder = false,
     EdgeInsets padding = const EdgeInsets.all(16),
+    bool isDarkMode = false,
   }) {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.grey[300], // Light gray background like in the images
-        borderRadius:
-            BorderRadius.circular(16), // Increased radius for softer corners
+        color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          // White glow on top-left (like in Image 1)
           BoxShadow(
-            color: Colors.white.withOpacity(0.9),
+            color: isDarkMode
+                ? Colors.white.withOpacity(0.1)
+                : Colors.white.withOpacity(0.9),
             offset: Offset(-3, -3),
             blurRadius: 6,
             spreadRadius: 1,
           ),
-          // Darker shadow on bottom-right
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: isDarkMode
+                ? Colors.black.withOpacity(0.4)
+                : Colors.black.withOpacity(0.2),
             offset: Offset(3, 3),
             blurRadius: 6,
             spreadRadius: 1,
@@ -1447,16 +1477,19 @@ class _HomePageState extends State<HomePage>
         ],
         border: bottomBorder
             ? Border(
-                bottom: BorderSide(color: Colors.blue.shade300, width: 1.5))
+                bottom: BorderSide(
+                    color: isDarkMode
+                        ? Colors.blue.shade700
+                        : Colors.blue.shade300,
+                    width: 1.5))
             : null,
       ),
       child: child,
     );
   }
 
-  // New method to create clickable interface chips
-  Widget _buildClickableChip(String label) {
-    // Get the active state from the map
+  // Modify _buildClickableChip to support dark mode
+  Widget _buildClickableChip(String label, bool isDarkMode) {
     bool isActive = interfaceButtonStates[label] ?? false;
 
     return GestureDetector(
@@ -1465,36 +1498,42 @@ class _HomePageState extends State<HomePage>
         padding: EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           color: isActive
-              ? Colors.grey[500]
-              : Colors.grey[300], // Medium grey when active
+              ? (isDarkMode ? Colors.grey[600] : Colors.grey[500])
+              : (isDarkMode ? Colors.grey[800] : Colors.grey[300]),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
-            // Invert shadows when active to create "pressed" effect
             if (isActive)
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: isDarkMode
+                    ? Colors.black.withOpacity(0.3)
+                    : Colors.black.withOpacity(0.2),
                 offset: Offset(-2, -2),
                 blurRadius: 4,
                 spreadRadius: 0.5,
               )
             else
               BoxShadow(
-                color: Colors.white.withOpacity(0.9),
+                color: isDarkMode
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.white.withOpacity(0.9),
                 offset: Offset(-2, -2),
                 blurRadius: 4,
                 spreadRadius: 0.5,
               ),
-
             if (isActive)
               BoxShadow(
-                color: Colors.white.withOpacity(0.5),
+                color: isDarkMode
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.white.withOpacity(0.5),
                 offset: Offset(2, 2),
                 blurRadius: 4,
                 spreadRadius: 0.5,
               )
             else
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
+                color: isDarkMode
+                    ? Colors.black.withOpacity(0.3)
+                    : Colors.black.withOpacity(0.15),
                 offset: Offset(2, 2),
                 blurRadius: 4,
                 spreadRadius: 0.5,
@@ -1506,7 +1545,9 @@ class _HomePageState extends State<HomePage>
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isActive ? Colors.white : Colors.black54,
+            color: isActive
+                ? Colors.white
+                : (isDarkMode ? Colors.white70 : Colors.black54),
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
           overflow: TextOverflow.ellipsis,
@@ -1515,37 +1556,5 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Keep this old method for compatibility but don't use it for interface buttons
-  Widget _buildChip(String label) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.grey[300], // Match the color with the cards
-        borderRadius:
-            BorderRadius.circular(12), // Increased radius like in Image 2
-        boxShadow: [
-          // White glow on top-left
-          BoxShadow(
-            color: Colors.white.withOpacity(0.9),
-            offset: Offset(-2, -2),
-            blurRadius: 4,
-            spreadRadius: 0.5,
-          ),
-          // Darker shadow on bottom-right
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            offset: Offset(2, 2),
-            blurRadius: 4,
-            spreadRadius: 0.5,
-          ),
-        ],
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 14, color: Colors.black54),
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
+  // The rest of the methods remain the same
 }
