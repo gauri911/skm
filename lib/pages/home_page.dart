@@ -993,6 +993,7 @@ class _HomePageState extends State<HomePage>
   }
 
   // Helper widget for PIN management buttons
+  // Helper widget for PIN management buttons
   Widget _buildPIVActionButton(String label, IconData icon,
       [Function()? onTap]) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -1002,18 +1003,26 @@ class _HomePageState extends State<HomePage>
         onTap: onTap,
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.black87 : null,
+            border: Border(
+              bottom: BorderSide(
+                color: isDarkMode ? Colors.white10 : Colors.grey[300]!,
+              ),
+            ),
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon,
                   size: 16,
-                  color: isDarkMode ? Colors.grey[400] : Colors.grey[700]),
+                  color: isDarkMode ? Colors.white54 : Colors.grey[700]),
               SizedBox(width: 4),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: 14,
-                  color: isDarkMode ? Colors.grey[300] : Colors.grey[800],
+                  color: isDarkMode ? Colors.white70 : Colors.grey[800],
                 ),
               ),
             ],
@@ -1025,22 +1034,36 @@ class _HomePageState extends State<HomePage>
 
   // Helper widget for certificate management buttons
   Widget _buildCertButton(String label, IconData icon) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.grey[500],
-        border: Border.all(color: Colors.grey[600]!),
+        color: isDarkMode ? Colors.black87 : Colors.grey[500],
+        border: Border.all(
+          color: isDarkMode ? Colors.white12 : Colors.grey[600]!,
+        ),
+        boxShadow: isDarkMode
+            ? [
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 0.7,
+                )
+              ]
+            : null,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 16, color: Colors.white),
+          Icon(icon,
+              size: 16, color: isDarkMode ? Colors.white70 : Colors.white),
           SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white,
+              color: isDarkMode ? Colors.white70 : Colors.white,
             ),
           ),
         ],
@@ -1052,17 +1075,20 @@ class _HomePageState extends State<HomePage>
   Future<void> _showEditDialog() async {
     TextEditingController textController =
         TextEditingController(text: securityKeyName);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.grey[300], // Changed to light grey color
+          backgroundColor: isDarkMode ? Colors.black : Colors.grey[300],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
+            side: isDarkMode
+                ? BorderSide(color: Colors.white10, width: 1)
+                : BorderSide.none,
           ),
-          // Adding constraints to reduce the width
           child: Container(
             constraints: BoxConstraints(maxWidth: 300),
             child: Padding(
@@ -1074,9 +1100,9 @@ class _HomePageState extends State<HomePage>
                   Text(
                     'Edit Security Key Name',
                     style: TextStyle(
-                      fontSize: 15, // Reduced font size
+                      fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[800], // Match home page text color
+                      color: isDarkMode ? Colors.white70 : Colors.grey[800],
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -1085,17 +1111,27 @@ class _HomePageState extends State<HomePage>
                     controller: textController,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(color: Colors.grey[400]!),
+                        borderSide: BorderSide(
+                          color:
+                              isDarkMode ? Colors.white12 : Colors.grey[400]!,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(color: Colors.blue.shade300),
+                        borderSide: BorderSide(
+                          color: isDarkMode
+                              ? Colors.blue.shade900
+                              : Colors.blue.shade300,
+                        ),
                       ),
                       contentPadding:
                           EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                    ),
+                    style: TextStyle(
+                      color: isDarkMode ? Colors.white70 : Colors.black,
                     ),
                   ),
                   SizedBox(height: 20),
@@ -1106,7 +1142,8 @@ class _HomePageState extends State<HomePage>
                         child: Text(
                           'Cancel',
                           style: TextStyle(
-                            color: Colors.grey[700],
+                            color:
+                                isDarkMode ? Colors.white54 : Colors.grey[700],
                             fontSize: 14,
                           ),
                         ),
@@ -1119,7 +1156,9 @@ class _HomePageState extends State<HomePage>
                         child: Text(
                           'Save',
                           style: TextStyle(
-                            color: Colors.blue[700],
+                            color: isDarkMode
+                                ? Colors.blue.shade300
+                                : Colors.blue[700],
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -1167,9 +1206,9 @@ class _HomePageState extends State<HomePage>
                       end: Alignment.bottomCenter,
                       colors: themeProvider.isDarkMode
                           ? [
-                              Colors.grey[900]!,
-                              Colors.grey[800]!,
-                              Colors.grey[700]!,
+                              const Color.fromARGB(221, 0, 0, 0),
+                              const Color.fromARGB(221, 31, 32, 31),
+                              const Color.fromARGB(221, 43, 41, 41),
                             ]
                           : [
                               Colors.grey[200]!,
@@ -1201,13 +1240,12 @@ class _HomePageState extends State<HomePage>
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
                                     color: themeProvider.isDarkMode
-                                        ? Colors.grey[300]
-                                        : Colors.grey[800],
+                                        ? Colors.white70
+                                        : const Color.fromARGB(255, 6, 6, 6),
                                     letterSpacing: 0.5,
                                   ),
                                 ),
                               ),
-                              // Modify existing widgets to use theme-aware colors
                               _buildEmbossedCard(
                                 child: Row(
                                   mainAxisAlignment:
@@ -1260,10 +1298,8 @@ class _HomePageState extends State<HomePage>
                                           shape: BoxShape.circle,
                                           boxShadow: [
                                             BoxShadow(
-                                              color: (themeProvider.isDarkMode
-                                                      ? Colors.blue.shade900
-                                                      : Colors.blue)
-                                                  .withOpacity(0.2 +
+                                              color: Colors.blue.withOpacity(
+                                                  0.2 +
                                                       0.1 *
                                                           _animationController
                                                               .value),
@@ -1304,8 +1340,8 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-// Add this method before _buildDataRows method
   Widget _buildInfoTile(String label, String value) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1313,9 +1349,7 @@ class _HomePageState extends State<HomePage>
           label,
           style: TextStyle(
             fontSize: 12,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white70
-                : Colors.black54,
+            color: isDarkMode ? Colors.white60 : Colors.black54,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -1324,16 +1358,13 @@ class _HomePageState extends State<HomePage>
           value,
           style: TextStyle(
             fontSize: 14,
-            color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Colors.black87,
+            color: isDarkMode ? Colors.white70 : Colors.black87,
           ),
         ),
       ],
     );
   }
 
-  // Modify _buildDataRows to accept isDarkMode
   Widget _buildDataRows(bool isDarkMode) {
     return Column(
       children: [
@@ -1348,7 +1379,7 @@ class _HomePageState extends State<HomePage>
             SizedBox(width: 12),
             Expanded(
               child: _buildEmbossedCard(
-                child: _buildInfoTile('CosVersion No', '1600'),
+                child: _buildInfoTile('CosVersion No', '1.6.00'),
                 isDarkMode: isDarkMode,
               ),
             ),
@@ -1445,7 +1476,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Modify other methods to support dark mode
   Widget _buildEmbossedCard({
     required Widget child,
     bool bottomBorder = false,
@@ -1455,24 +1485,26 @@ class _HomePageState extends State<HomePage>
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+        color: isDarkMode
+            ? const Color.fromARGB(255, 46, 46, 46)
+            : Colors.grey[300],
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: isDarkMode
-                ? Colors.white.withOpacity(0.1)
-                : Colors.white.withOpacity(0.9),
+                ? Colors.white.withOpacity(0.05)
+                : Colors.white.withOpacity(0.5),
             offset: Offset(-3, -3),
             blurRadius: 6,
             spreadRadius: 1,
           ),
           BoxShadow(
             color: isDarkMode
-                ? Colors.black.withOpacity(0.4)
-                : Colors.black.withOpacity(0.2),
+                ? const Color.fromARGB(255, 195, 195, 195).withOpacity(0.4)
+                : const Color.fromARGB(255, 151, 151, 151).withOpacity(0.2),
             offset: Offset(3, 3),
             blurRadius: 6,
-            spreadRadius: 1,
+            spreadRadius: 0.8,
           ),
         ],
         border: bottomBorder
