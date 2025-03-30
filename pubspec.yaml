@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  usb_communication:
+    path: ../usb_communication
+
 
   provider: ^6.0.0
   google_fonts: ^4.0.0  # For font styling (if needed)

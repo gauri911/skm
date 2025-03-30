@@ -65,10 +65,8 @@ class _HomePageState extends State<HomePage>
 
   // Modified function to show custom snackbar for feedback
   void _showSnackBar(String message) {
-    // Clear any existing SnackBars first
     ScaffoldMessenger.of(context).clearSnackBars();
 
-    // Show the custom SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
