@@ -16,7 +16,7 @@
 const GUID MY_USB_GUID = {0xA5DCBF10L, 0x6530, 0x11D2, {0x90, 0x1f, 0x00, 0xc0, 0x4f, 0xb9, 0x51, 0xed}};
 
 // Helper function to convert wide string to narrow string
-std::string WideToNarrow(const wchar_t* str) {
+std::string WideToNarrow(LPCWSTR str) {
     if (!str) return std::string();
     int size_needed = WideCharToMultiByte(CP_UTF8, 0, str, -1, NULL, 0, NULL, NULL);
     std::string strTo(size_needed, 0);
@@ -49,10 +49,13 @@ extern "C" __declspec(dllexport) bool FindUsbDevice(const char* vid, const char*
         SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, NULL, 0, &requiredSize, NULL);
 
         PSP_DEVICE_INTERFACE_DETAIL_DATA detailData = (PSP_DEVICE_INTERFACE_DETAIL_DATA)malloc(requiredSize);
+        if (!detailData) {
+            continue;
+        }
         detailData->cbSize = sizeof(SP_DEVICE_INTERFACE_DETAIL_DATA);
 
         if (SetupDiGetDeviceInterfaceDetail(deviceInfo, &interfaceData, detailData, requiredSize, NULL, NULL)) {
-            std::string device = ToLower(WideToNarrow(detailData->DevicePath));
+            std::string device = ToLower(std::string(detailData->DevicePath));
             std::string vid_lower = ToLower(std::string(vid));
             std::string pid_lower = ToLower(std::string(pid));
 
@@ -67,7 +70,6 @@ extern "C" __declspec(dllexport) bool FindUsbDevice(const char* vid, const char*
     }
 
     SetupDiDestroyDeviceInfoList(deviceInfo);
-
     return foundDevice;
 }
 
