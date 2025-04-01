@@ -81,7 +81,6 @@ class _MyAppState extends State<MyApp> {
                   ? const HomePage()
                   : const KeyVerificationPage(),
           routes: {
-            '/': (context) => const HomePage(),
             '/accounts': (context) => const AccountsPage(),
             '/slots': (context) => const SlotsPage(),
             '/help': (context) => const Scaffold(

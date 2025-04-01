@@ -34,16 +34,7 @@ target_compile_definitions(${BINARY_NAME} PRIVATE "NOMINMAX")
 # dependencies here.
 target_link_libraries(${BINARY_NAME} PRIVATE flutter flutter_wrapper_app)
 target_link_libraries(${BINARY_NAME} PRIVATE "dwmapi.lib")
-
-# Explicitly link the plugin library and add its include directory
-target_link_libraries(${BINARY_NAME} PRIVATE usb_communication_plugin)
-target_include_directories(${BINARY_NAME} PRIVATE
-  "${CMAKE_SOURCE_DIR}"
-  "${CMAKE_SOURCE_DIR}/../modules/usb_communication/windows/include"
-  "${CMAKE_SOURCE_DIR}/../modules/usb_communication/windows"
-  "${CMAKE_SOURCE_DIR}/flutter/ephemeral"
-  "${CMAKE_SOURCE_DIR}/flutter/ephemeral/cpp_client_wrapper/include"
-)
+target_include_directories(${BINARY_NAME} PRIVATE "${CMAKE_SOURCE_DIR}")
 
 # Run the Flutter tool portions of the build. This must not be removed.
 add_dependencies(${BINARY_NAME} flutter_assemble)

@@ -57,51 +57,54 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.light;
-
-  ThemeMode get themeMode => _themeMode;
+  static const String _themeKey = 'theme_mode';
+  late SharedPreferences _prefs;
+  ThemeMode _themeMode = ThemeMode.system;
 
   ThemeProvider() {
-    _loadTheme();
+    _loadThemeMode();
   }
 
-  // Load saved theme from SharedPreferences
-  Future<void> _loadTheme() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String themeName = prefs.getString('theme') ?? 'light';
-
-    if (themeName == 'dark') {
-      _themeMode = ThemeMode.dark;
-    } else {
-      _themeMode = ThemeMode.light;
-    }
-
-    notifyListeners();
-  }
-
-  // Set theme and save to SharedPreferences
-  Future<void> setTheme(String themeName) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('theme', themeName);
-
-    if (themeName == 'dark') {
-      _themeMode = ThemeMode.dark;
-    } else {
-      _themeMode = ThemeMode.light;
-    }
-
-    notifyListeners();
-  }
-
-  // Convenience methods
+  ThemeMode get themeMode => _themeMode;
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
-  // Toggle theme
-  Future<void> toggleTheme() async {
-    if (_themeMode == ThemeMode.light) {
-      await setTheme('dark');
-    } else {
-      await setTheme('light');
+  Future<void> _loadThemeMode() async {
+    _prefs = await SharedPreferences.getInstance();
+    final themeModeString = _prefs.getString(_themeKey) ?? 'system';
+    _themeMode = _getThemeModeFromString(themeModeString);
+    notifyListeners();
+  }
+
+  Future<void> setTheme(String theme) async {
+    final mode = _getThemeModeFromString(theme);
+    await setThemeMode(mode);
+  }
+
+  Future<void> setThemeMode(ThemeMode mode) async {
+    _themeMode = mode;
+    await _prefs.setString(_themeKey, _getStringFromThemeMode(mode));
+    notifyListeners();
+  }
+
+  String _getStringFromThemeMode(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'light';
+      case ThemeMode.dark:
+        return 'dark';
+      case ThemeMode.system:
+        return 'system';
+    }
+  }
+
+  ThemeMode _getThemeModeFromString(String themeModeString) {
+    switch (themeModeString) {
+      case 'light':
+        return ThemeMode.light;
+      case 'dark':
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
     }
   }
 }

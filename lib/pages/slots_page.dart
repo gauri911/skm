@@ -50,8 +50,9 @@ class _SlotsPageState extends State<SlotsPage> {
     final optionTextColor = isDarkMode ? Colors.grey[200]! : Colors.grey[800]!;
 
     return Scaffold(
-      // Use the theme's background color for Scaffold
-      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        title: const Text('Slots'),
+      ),
       body: Row(
         children: [
           // Include the sidebar

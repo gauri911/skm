@@ -991,7 +991,6 @@ class _HomePageState extends State<HomePage>
   }
 
   // Helper widget for PIN management buttons
-  // Helper widget for PIN management buttons
   Widget _buildPIVActionButton(String label, IconData icon,
       [Function()? onTap]) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
