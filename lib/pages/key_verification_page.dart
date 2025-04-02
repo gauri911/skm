@@ -42,9 +42,9 @@ class _KeyVerificationPageState extends State<KeyVerificationPage> {
     });
 
     try {
-      // VID and PID for Feitian security key
-      const String vid = "085D&096E";
-      const String pid = "085D&096E";
+      // Correct VID and PID for the specific Feitian security key
+      const String vid = "096e";
+      const String pid = "086e";
 
       print("Checking for USB device with VID: $vid, PID: $pid");
 
