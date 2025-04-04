@@ -19,5 +19,10 @@ const List<FeitianSecurityKey> feitianSecurityKeys = [
   FeitianSecurityKey(vid: "096e", pid: "0850", name: "Feitian MultiPass FIDO"),
   FeitianSecurityKey(vid: "096e", pid: "0852", name: "Feitian AllinPass FIDO"),
   FeitianSecurityKey(vid: "096e", pid: "0858", name: "Feitian BioPass FIDO2"),
+  FeitianSecurityKey(
+    vid: "096e",
+    pid: "0867",
+    name: "Feitian BioPass PLUS FIDO2",
+  ),
   // Add any other Feitian keys as needed
 ];
