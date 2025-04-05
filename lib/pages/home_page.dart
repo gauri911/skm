@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/sidebar.dart';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import '../theme_provider.dart';
+import '../models/feitian_security_key.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,6 +21,7 @@ class _HomePageState extends State<HomePage>
   late Animation<double> _rotationAnimation;
   late Animation<double> _scaleAnimation;
   String securityKeyName = 'FEITIAN iePass K44 USB Security Key';
+  String securityKeyImage = 'assets/usb_security_key.png';
 
   // Add state variables to track button states
   Map<String, bool> interfaceButtonStates = {
@@ -31,6 +34,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    _loadDetectedKeyInfo();
 
     // Initialize animation controller with duration
     _animationController = AnimationController(
@@ -55,6 +59,23 @@ class _HomePageState extends State<HomePage>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
+  }
+
+  Future<void> _loadDetectedKeyInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final detectedKeyName = prefs.getString('detectedKeyName');
+    
+    if (detectedKeyName != null) {
+      final detectedKey = feitianSecurityKeys.firstWhere(
+        (key) => key.name == detectedKeyName,
+        orElse: () => feitianSecurityKeys.first,
+      );
+      
+      setState(() {
+        securityKeyName = detectedKey.name;
+        securityKeyImage = detectedKey.imagePath;
+      });
+    }
   }
 
   @override
@@ -1312,7 +1333,7 @@ class _HomePageState extends State<HomePage>
                                     );
                                   },
                                   child: Image.asset(
-                                    'assets/usb_security_key.png',
+                                    securityKeyImage,
                                     height: 180,
                                     width: 210,
                                     color: themeProvider.isDarkMode
