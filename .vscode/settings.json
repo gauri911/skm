@@ -1,3 +1,6 @@
 {
-    "cmake.sourceDirectory": "D:/Asus WebStorage/Workspace_Cursor/FT_US/skm/linux"
+    "cmake.sourceDirectory": "D:/Asus WebStorage/Workspace_Cursor/FT_US/skm/linux",
+    "files.associations": {
+        "vector": "cpp"
+    }
 }
