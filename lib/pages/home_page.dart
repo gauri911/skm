@@ -169,9 +169,11 @@ class _HomePageState extends State<HomePage>
       '$interface interface ${interfaceButtonStates[interface]! ? 'enabled' : 'disabled'}',
     );
 
-    // Add this code to show the PIV management dialog when PIV is enabled
+    // Show appropriate management dialog based on interface
     if (interface == 'PIV' && interfaceButtonStates[interface]!) {
       _showPIVManagementDialog();
+    } else if (interface == 'FIDO' && interfaceButtonStates[interface]!) {
+      _showFIDOManagementDialog();
     }
   }
 
@@ -316,6 +318,169 @@ class _HomePageState extends State<HomePage>
           ),
         );
       },
+    );
+  }
+
+  // Function to show FIDO Management Dialog
+  Future<void> _showFIDOManagementDialog() async {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+          child: Container(
+            width: 500,
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'FIDO Management',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: isDarkMode ? Colors.white70 : Colors.black87,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.close,
+                        color: isDarkMode ? Colors.white70 : Colors.black54,
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                _buildFIDOManagementOption('PIN MANAGEMENT', [
+                  _buildFIDOManagementAction('Change PIN', Icons.vpn_key, () {
+                    Navigator.pop(context);
+                    _showChangePinDialog(context);
+                  }),
+                ]),
+                const SizedBox(height: 16),
+                _buildFIDOManagementOption('FINGERPRINT MANAGEMENT', [
+                  _buildFIDOManagementAction(
+                    'Fingerprint Management',
+                    Icons.fingerprint,
+                    () {
+                      Navigator.pop(context);
+                      // TODO: Implement fingerprint management
+                      _showSnackBar('Fingerprint management coming soon');
+                    },
+                  ),
+                ]),
+                const SizedBox(height: 16),
+                _buildFIDOManagementOption('CREDENTIAL MANAGEMENT', [
+                  _buildFIDOManagementAction(
+                    'Enum Credential',
+                    Icons.list_alt,
+                    () {
+                      Navigator.pop(context);
+                      // TODO: Implement credential enumeration
+                      _showSnackBar('Credential enumeration coming soon');
+                    },
+                  ),
+                ]),
+                const SizedBox(height: 16),
+                _buildFIDOManagementOption('RESET', [
+                  _buildFIDOManagementAction('Reset Device', Icons.restore, () {
+                    Navigator.pop(context);
+                    _showResetDialog();
+                  }),
+                ]),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // Helper widget for FIDO management options
+  Widget _buildFIDOManagementOption(String title, List<Widget> actions) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: isDarkMode ? Colors.white60 : Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: isDarkMode ? Colors.grey[850] : Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(children: actions),
+        ),
+      ],
+    );
+  }
+
+  // Helper widget for FIDO management actions
+  Widget _buildFIDOManagementAction(
+    String label,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
+              width: 0.5,
+            ),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 18,
+              color: isDarkMode ? Colors.white70 : Colors.black87,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 15,
+                color: isDarkMode ? Colors.white70 : Colors.black87,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              Icons.chevron_right,
+              size: 20,
+              color: isDarkMode ? Colors.white54 : Colors.black54,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
