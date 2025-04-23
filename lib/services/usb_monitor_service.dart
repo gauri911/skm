@@ -24,7 +24,7 @@ class UsbMonitorService {
 
   void _checkDeviceStatus() {
     bool deviceFound = false;
-    
+
     // Check for any of the supported Feitian security keys
     for (final securityKey in feitianSecurityKeys) {
       final path = _usbFido.findUsbDevice(securityKey.vid, securityKey.pid);
@@ -38,12 +38,20 @@ class UsbMonitorService {
     if (deviceFound != _lastDeviceStatus) {
       _lastDeviceStatus = deviceFound;
       _deviceStatusController.add(deviceFound);
-      print('Device status changed: ${deviceFound ? 'Connected' : 'Disconnected'}');
+      print(
+        'Device status changed: ${deviceFound ? 'Connected' : 'Disconnected'}',
+      );
     }
+  }
+
+  Future<void> sendCommand(List<int> command) async {
+    // TODO: Implement actual USB communication
+    // This is a placeholder implementation
+    await Future.delayed(const Duration(milliseconds: 100));
   }
 
   void dispose() {
     stopMonitoring();
     _deviceStatusController.close();
   }
-} 
+}
