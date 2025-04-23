@@ -6,7 +6,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,21 +29,21 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Feitian Authenticator'),
         backgroundColor: const Color(0xFF344955),
-        actions: [
+        actions: const [
           Row(
             children: [
-              const Icon(Icons.usb, color: Colors.white),
-              const SizedBox(width: 5),
-              const Text('USB Connected'),
-              const SizedBox(width: 15),
-              const Icon(Icons.nfc, color: Colors.white),
-              const SizedBox(width: 5),
-              const Text('Plus FIDO Key'),
-              const SizedBox(width: 15),
-              const Icon(Icons.business, color: Colors.white),
-              const SizedBox(width: 5),
-              const Text('Hello for Business'),
-              const SizedBox(width: 15),
+              Icon(Icons.usb, color: Colors.white),
+              SizedBox(width: 5),
+              Text('USB Connected'),
+              SizedBox(width: 15),
+              Icon(Icons.nfc, color: Colors.white),
+              SizedBox(width: 5),
+              Text('Plus FIDO Key'),
+              SizedBox(width: 15),
+              Icon(Icons.business, color: Colors.white),
+              SizedBox(width: 5),
+              Text('Hello for Business'),
+              SizedBox(width: 15),
             ],
           ),
         ],

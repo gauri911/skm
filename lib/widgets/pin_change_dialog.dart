@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import '../constants/app_constants.dart';
 
 class PINChangeDialog extends StatefulWidget {
   final Function(String oldPin, String newPin) onConfirm;
   final bool isLoading;
 
   const PINChangeDialog({
-    Key? key,
+    super.key,
     required this.onConfirm,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   State<PINChangeDialog> createState() => _PINChangeDialogState();

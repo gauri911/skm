@@ -10,14 +10,14 @@ class BasePage extends StatelessWidget {
   final VoidCallback? onRetry;
 
   const BasePage({
-    Key? key,
+    super.key,
     required this.title,
     required this.body,
     this.actions,
     this.isLoading = false,
     this.error,
     this.onRetry,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

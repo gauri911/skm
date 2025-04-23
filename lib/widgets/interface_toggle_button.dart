@@ -7,12 +7,12 @@ class InterfaceToggleButton extends StatelessWidget {
   final bool isLoading;
 
   const InterfaceToggleButton({
-    Key? key,
+    super.key,
     required this.interface,
     required this.isEnabled,
     required this.onToggle,
     this.isLoading = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

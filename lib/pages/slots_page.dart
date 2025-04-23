@@ -29,8 +29,8 @@ class _SlotsPageState extends State<SlotsPage> {
     final backgroundColor = isDarkMode ? Colors.grey[900]! : Colors.grey[300]!;
     final gradientColors = isDarkMode
         ? [
-            const Color.fromARGB(255, 22, 22, 22)!,
-            const Color.fromARGB(255, 37, 37, 37)!,
+            const Color.fromARGB(255, 22, 22, 22),
+            const Color.fromARGB(255, 37, 37, 37),
             Colors.grey[800]!,
           ]
         : [

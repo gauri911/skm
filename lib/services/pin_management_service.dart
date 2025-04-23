@@ -127,11 +127,131 @@ class PinManagementService {
     }
   }
 
+  // Reset PIN using PUK
+  Future<bool> resetPinWithPuk(String puk, String newPin) async {
+    try {
+      // Validate PUK and new PIN
+      if (!_isValidPuk(puk) || !_isValidPin(newPin)) {
+        print('Invalid PUK or PIN format');
+        return false;
+      }
+
+      // Find the connected USB device
+      final devicePath = _findConnectedDevice();
+      if (devicePath == null) {
+        print('No USB security key found');
+        return false;
+      }
+
+      // Simulate communication delay
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      // TODO: Replace with actual native call to reset PIN with PUK
+      // In a real implementation, would call native function:
+      // final result = _nativeLib.resetPinWithPuk(puk.toNativeUtf8(), newPin.toNativeUtf8());
+      // return result == 0;
+
+      // For testing purposes, always return success
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(PIN_SET_KEY, true);
+      return true;
+    } catch (e) {
+      print('Error resetting PIN with PUK: $e');
+      return false;
+    }
+  }
+
+  // Change PUK
+  Future<bool> changePuk(
+    String oldPuk,
+    String newPuk, [
+    dynamic context,
+  ]) async {
+    try {
+      // Validate PUKs
+      if (!_isValidPuk(oldPuk) || !_isValidPuk(newPuk)) {
+        print('Invalid PUK format');
+        return false;
+      }
+
+      // Find the connected USB device
+      final devicePath = _findConnectedDevice();
+      if (devicePath == null) {
+        print('No USB security key found');
+        return false;
+      }
+
+      // Simulate communication delay
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      // TODO: Replace with actual native call to change PUK
+      // In a real implementation, would call native function:
+      // final result = _nativeLib.changePuk(oldPuk.toNativeUtf8(), newPuk.toNativeUtf8());
+      // return result == 0;
+
+      // For testing purposes, always return success
+      return true;
+    } catch (e) {
+      print('Error changing PUK: $e');
+      return false;
+    }
+  }
+
+  // Change Manager Key
+  Future<bool> changeManagerKey(
+    String oldKey,
+    String newKey, [
+    dynamic context,
+  ]) async {
+    try {
+      // Validate Manager Keys
+      if (!_isValidManagerKey(oldKey) || !_isValidManagerKey(newKey)) {
+        print('Invalid Manager Key format');
+        return false;
+      }
+
+      // Find the connected USB device
+      final devicePath = _findConnectedDevice();
+      if (devicePath == null) {
+        print('No USB security key found');
+        return false;
+      }
+
+      // Simulate communication delay
+      await Future.delayed(const Duration(milliseconds: 1000));
+
+      // TODO: Replace with actual native call to change Manager Key
+      // In a real implementation, would call native function:
+      // final result = _nativeLib.changeManagerKey(oldKey.toNativeUtf8(), newKey.toNativeUtf8());
+      // return result == 0;
+
+      // For testing purposes, always return success
+      return true;
+    } catch (e) {
+      print('Error changing Manager Key: $e');
+      return false;
+    }
+  }
+
   // Validate PIN format
   bool _isValidPin(String pin) {
     // PIN must be numeric and between MIN_PIN_LENGTH and MAX_PIN_LENGTH digits
     final RegExp numericRegex = RegExp(r'^\d+$');
     return pin.length >= 6 && pin.length <= 8 && numericRegex.hasMatch(pin);
+  }
+
+  // Validate PUK format
+  bool _isValidPuk(String puk) {
+    // PUK must be numeric and between 8 and 12 digits
+    final RegExp numericRegex = RegExp(r'^\d+$');
+    return puk.length >= 8 && puk.length <= 12 && numericRegex.hasMatch(puk);
+  }
+
+  // Validate Manager Key format
+  bool _isValidManagerKey(String key) {
+    // Manager Key must be numeric and between 6 and 8 digits (similar to PIN for simplicity)
+    final RegExp numericRegex = RegExp(r'^\d+$');
+    return key.length >= 6 && key.length <= 8 && numericRegex.hasMatch(key);
   }
 
   // Find connected security key
@@ -150,7 +270,7 @@ class PinManagementService {
 
   Future<bool> _nativeSetInitialPin(String newPin) async {
     // Simulate communication delay
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     // In a real implementation, this would call the native function
     // Example of calling native function (not implemented here):
@@ -164,7 +284,7 @@ class PinManagementService {
 
   Future<bool> _nativeChangePin(String oldPin, String newPin) async {
     // Simulate communication delay
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
 
     // In a real implementation, would call native function:
     // final result = _nativeLib.changePin(oldPin.toNativeUtf8(), newPin.toNativeUtf8());
@@ -176,7 +296,7 @@ class PinManagementService {
 
   Future<bool> _nativeVerifyPin(String pin) async {
     // Simulate communication delay
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
 
     // In a real implementation:
     // final result = _nativeLib.verifyPin(pin.toNativeUtf8());

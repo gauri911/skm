@@ -5,7 +5,6 @@ import '../widgets/sidebar.dart';
 import 'package:provider/provider.dart';
 import '../theme_provider.dart';
 import '../models/feitian_security_key.dart';
-import '../providers/piv_provider.dart';
 import 'dart:async';
 import '../services/pin_management_service.dart';
 import '../services/usb_detection_service.dart';
@@ -399,7 +398,7 @@ class _HomePageState extends State<HomePage>
   Future<void> _showFIDOManagementDialog() async {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    // Cream color palette for dialog - matching PIV dialog
+    // Enhanced color palette for FIDO dialog
     final dialogBgColor =
         isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
     final dialogTextColor =
@@ -408,6 +407,8 @@ class _HomePageState extends State<HomePage>
         isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
     final dialogBorderColor =
         isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final accentColor =
+        isDarkMode ? const Color(0xFFD1C9A6) : const Color(0xFFBBB193);
 
     return showDialog<void>(
       context: context,
@@ -419,43 +420,72 @@ class _HomePageState extends State<HomePage>
             side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
           backgroundColor: dialogBgColor,
-          elevation: 5,
+          elevation: 8,
           child: Container(
-            width: 500,
+            width: 480, // Slightly wider for better layout
             padding: const EdgeInsets.all(0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header with rounded corners
+                // Header with rounded corners and subtle gradient
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
-                    vertical: 16,
+                    vertical: 15,
                   ),
                   decoration: BoxDecoration(
-                    color: dialogHeaderColor,
+                    gradient: LinearGradient(
+                      colors: [
+                        dialogHeaderColor,
+                        dialogHeaderColor.withOpacity(0.85),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(16.0),
                       topRight: Radius.circular(16.0),
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        spreadRadius: 0,
+                        blurRadius: 4,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'FIDO Management',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: dialogTextColor,
-                        ),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.shield_outlined,
+                            color: dialogTextColor,
+                            size: 22,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            'FIDO Management',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: dialogTextColor,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
                       ),
                       IconButton(
                         icon: Icon(
                           Icons.close,
                           color: dialogTextColor.withOpacity(0.7),
+                          size: 20,
                         ),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -463,87 +493,118 @@ class _HomePageState extends State<HomePage>
                     ],
                   ),
                 ),
-                // Content
+
+                // Content with grid layout
                 Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildFIDOManagementOption(
-                        'PIN MANAGEMENT',
-                        [
-                          _buildFIDOManagementAction(
-                            'Change PIN',
-                            Icons.vpn_key,
-                            () {
-                              Navigator.pop(context);
-                              _showChangePinDialog(context);
-                            },
-                            dialogTextColor,
+                      // First row with two option cards side by side
+                      Row(
+                        children: [
+                          // PIN Management Card
+                          Expanded(
+                            child: _buildFIDOOptionCard(
+                              title: 'PIN MANAGEMENT',
+                              icon: Icons.vpn_key,
+                              options: [
+                                _buildFIDOActionItem(
+                                  'Change PIN',
+                                  Icons.edit,
+                                  () {
+                                    Navigator.pop(context);
+                                    _showChangePinDialog(context);
+                                  },
+                                  dialogTextColor,
+                                ),
+                              ],
+                              headerColor: accentColor,
+                              bgColor: dialogHeaderColor.withOpacity(0.3),
+                              borderColor: dialogBorderColor,
+                              textColor: dialogTextColor,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Fingerprint Management Card
+                          Expanded(
+                            child: _buildFIDOOptionCard(
+                              title: 'FINGERPRINT MANAGEMENT',
+                              icon: Icons.fingerprint,
+                              options: [
+                                _buildFIDOActionItem(
+                                  'Fingerprint Management',
+                                  Icons.fingerprint,
+                                  () {
+                                    Navigator.pop(context);
+                                    _showSnackBar(
+                                      'Fingerprint management coming soon',
+                                    );
+                                  },
+                                  dialogTextColor,
+                                ),
+                              ],
+                              headerColor: accentColor,
+                              bgColor: dialogHeaderColor.withOpacity(0.3),
+                              borderColor: dialogBorderColor,
+                              textColor: dialogTextColor,
+                            ),
                           ),
                         ],
-                        dialogHeaderColor,
-                        dialogBorderColor,
                       ),
                       const SizedBox(height: 16),
-                      _buildFIDOManagementOption(
-                        'FINGERPRINT MANAGEMENT',
-                        [
-                          _buildFIDOManagementAction(
-                            'Fingerprint Management',
-                            Icons.fingerprint,
-                            () {
-                              Navigator.pop(context);
-                              // TODO: Implement fingerprint management
-                              _showSnackBar(
-                                'Fingerprint management coming soon',
-                              );
-                            },
-                            dialogTextColor,
+                      // Second row with two more option cards side by side
+                      Row(
+                        children: [
+                          // Credential Management Card
+                          Expanded(
+                            child: _buildFIDOOptionCard(
+                              title: 'CREDENTIAL MANAGEMENT',
+                              icon: Icons.list_alt,
+                              options: [
+                                _buildFIDOActionItem(
+                                  'Enum Credential',
+                                  Icons.assignment,
+                                  () {
+                                    Navigator.pop(context);
+                                    _showSnackBar(
+                                      'Credential enumeration coming soon',
+                                    );
+                                  },
+                                  dialogTextColor,
+                                ),
+                              ],
+                              headerColor: accentColor,
+                              bgColor: dialogHeaderColor.withOpacity(0.3),
+                              borderColor: dialogBorderColor,
+                              textColor: dialogTextColor,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Reset Card
+                          Expanded(
+                            child: _buildFIDOOptionCard(
+                              title: 'RESET',
+                              icon: Icons.restore,
+                              options: [
+                                _buildFIDOActionItem(
+                                  'Reset Device',
+                                  Icons.refresh,
+                                  () {
+                                    Navigator.pop(context);
+                                    _showResetDialog();
+                                  },
+                                  dialogTextColor,
+                                ),
+                              ],
+                              headerColor: accentColor,
+                              bgColor: dialogHeaderColor.withOpacity(0.3),
+                              borderColor: dialogBorderColor,
+                              textColor: dialogTextColor,
+                            ),
                           ),
                         ],
-                        dialogHeaderColor,
-                        dialogBorderColor,
                       ),
-                      const SizedBox(height: 16),
-                      _buildFIDOManagementOption(
-                        'CREDENTIAL MANAGEMENT',
-                        [
-                          _buildFIDOManagementAction(
-                            'Enum Credential',
-                            Icons.list_alt,
-                            () {
-                              Navigator.pop(context);
-                              // TODO: Implement credential enumeration
-                              _showSnackBar(
-                                'Credential enumeration coming soon',
-                              );
-                            },
-                            dialogTextColor,
-                          ),
-                        ],
-                        dialogHeaderColor,
-                        dialogBorderColor,
-                      ),
-                      const SizedBox(height: 16),
-                      _buildFIDOManagementOption(
-                        'RESET',
-                        [
-                          _buildFIDOManagementAction(
-                            'Reset Device',
-                            Icons.restore,
-                            () {
-                              Navigator.pop(context);
-                              _showResetDialog();
-                            },
-                            dialogTextColor,
-                          ),
-                        ],
-                        dialogHeaderColor,
-                        dialogBorderColor,
-                      ),
-                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -555,39 +616,68 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Helper widget for FIDO management options
-  Widget _buildFIDOManagementOption(
-    String title,
-    List<Widget> actions,
-    Color headerColor,
-    Color borderColor,
-  ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: headerColor,
+  // Helper widget for FIDO management option cards
+  Widget _buildFIDOOptionCard({
+    required String title,
+    required IconData icon,
+    required List<Widget> options,
+    required Color headerColor,
+    required Color bgColor,
+    required Color borderColor,
+    required Color textColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor.withOpacity(0.6), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: const Offset(0, 2),
           ),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: headerColor.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: borderColor, width: 1),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Card header
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: headerColor.withOpacity(0.2),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(11),
+                topRight: Radius.circular(11),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, size: 16, color: textColor.withOpacity(0.9)),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
           ),
-          child: Column(children: actions),
-        ),
-      ],
+          // Options list
+          Column(children: options),
+        ],
+      ),
     );
   }
 
-  // Helper widget for FIDO management actions
-  Widget _buildFIDOManagementAction(
+  // Helper widget for FIDO action items
+  Widget _buildFIDOActionItem(
     String label,
     IconData icon,
     VoidCallback onTap,
@@ -595,23 +685,30 @@ class _HomePageState extends State<HomePage>
   ) {
     return InkWell(
       onTap: onTap,
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(11),
+        bottomRight: Radius.circular(11),
+      ),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: textColor.withOpacity(0.5), width: 0.5),
-          ),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
-            Icon(icon, size: 18, color: textColor),
+            Icon(icon, size: 18, color: textColor.withOpacity(0.8)),
             const SizedBox(width: 12),
-            Text(label, style: TextStyle(fontSize: 15, color: textColor)),
-            const Spacer(),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: textColor,
+                ),
+              ),
+            ),
             Icon(
               Icons.chevron_right,
-              size: 20,
-              color: textColor.withOpacity(0.7),
+              size: 18,
+              color: textColor.withOpacity(0.6),
             ),
           ],
         ),
@@ -840,13 +937,6 @@ class _HomePageState extends State<HomePage>
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: Text(
-                              'Set PIN',
-                              style: TextStyle(
-                                color: dialogTextColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                             onPressed:
                                 isLoading
                                     ? null
@@ -933,6 +1023,13 @@ class _HomePageState extends State<HomePage>
                                         });
                                       }
                                     },
+                            child: Text(
+                              'Set PIN',
+                              style: TextStyle(
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -946,7 +1043,7 @@ class _HomePageState extends State<HomePage>
       },
     ).then((_) {
       // Reset the dialog flag when the dialog is closed in any way (including tapping outside if barrierDismissible is true)
-      this.setState(() {
+      setState(() {
         _isPinDialogShowing = false;
       });
     });
@@ -1213,13 +1310,6 @@ class _HomePageState extends State<HomePage>
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            child: Text(
-                              'Change PIN',
-                              style: TextStyle(
-                                color: dialogTextColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
                             onPressed:
                                 isLoading
                                     ? null
@@ -1322,6 +1412,13 @@ class _HomePageState extends State<HomePage>
                                         });
                                       }
                                     },
+                            child: Text(
+                              'Change PIN',
+                              style: TextStyle(
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -1352,6 +1449,8 @@ class _HomePageState extends State<HomePage>
     TextEditingController oldController = TextEditingController();
     TextEditingController newController = TextEditingController();
     TextEditingController confirmController = TextEditingController();
+    bool isLoading = false;
+    String errorMessage = '';
 
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -1372,10 +1471,10 @@ class _HomePageState extends State<HomePage>
     String? validateInput(String value) {
       if (value.isEmpty) return 'Please enter $newLabel';
       if (!RegExp(r'^\d+$').hasMatch(value)) return '$newLabel must be numeric';
-      if (value.contains(' ')) return '$newLabel cannot contain spaces';
-      if (value.length < minLength || value.length > maxLength) {
-        return '$newLabel must be $minLength-$maxLength digits';
-      }
+      if (value.length < minLength)
+        return '$newLabel must be at least $minLength digits';
+      if (value.length > maxLength)
+        return '$newLabel must be at most $maxLength digits';
       return null;
     }
 
@@ -1457,7 +1556,7 @@ class _HomePageState extends State<HomePage>
                                     if (states.contains(
                                       MaterialState.selected,
                                     )) {
-                                      return dialogHeaderColor;
+                                      return dialogTextColor;
                                     }
                                     return dialogTextColor.withOpacity(0.3);
                                   }),
@@ -1513,10 +1612,6 @@ class _HomePageState extends State<HomePage>
                                     ),
                                     filled: true,
                                     fillColor: dialogInputBgColor,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 12,
-                                    ),
                                     isDense: true,
                                   ),
                                   obscureText: true,
@@ -1574,10 +1669,6 @@ class _HomePageState extends State<HomePage>
                                     ),
                                     filled: true,
                                     fillColor: dialogInputBgColor,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 12,
-                                    ),
                                     isDense: true,
                                   ),
                                   obscureText: true,
@@ -1634,10 +1725,6 @@ class _HomePageState extends State<HomePage>
                                     ),
                                     filled: true,
                                     fillColor: dialogInputBgColor,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 12,
-                                    ),
                                     isDense: true,
                                   ),
                                   obscureText: true,
@@ -1650,6 +1737,19 @@ class _HomePageState extends State<HomePage>
                               ),
                             ],
                           ),
+                          if (errorMessage.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text(
+                                errorMessage,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          if (isLoading)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: CircularProgressIndicator(),
+                            ),
                         ],
                       ),
                     ),
@@ -1697,43 +1797,80 @@ class _HomePageState extends State<HomePage>
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            onPressed: () async {
-                              final newValue = newController.text;
-                              final confirmValue = confirmController.text;
-                              final oldValue =
-                                  useDefault
-                                      ? defaultValue
-                                      : oldController.text;
-                              final error = validateInput(newValue);
-                              if (error != null) {
-                                _showSnackBar(error);
-                                return;
-                              }
-                              if (newValue != confirmValue) {
-                                _showSnackBar(
-                                  'New and Confirm values do not match',
-                                );
-                                return;
-                              }
-                              if (!useDefault && oldValue.isEmpty) {
-                                _showSnackBar('Please enter $oldLabel');
-                                return;
-                              }
-                              try {
-                                final success = await onSubmit(
-                                  oldValue,
-                                  newValue,
-                                );
-                                if (success) {
-                                  _showSnackBar('$title successful');
-                                  Navigator.of(context).pop();
-                                } else {
-                                  _showSnackBar('Failed to $title');
-                                }
-                              } catch (e) {
-                                _showSnackBar('Error: ${e.toString()}');
-                              }
-                            },
+                            onPressed:
+                                isLoading
+                                    ? null
+                                    : () async {
+                                      final newValue = newController.text;
+                                      final confirmValue =
+                                          confirmController.text;
+                                      final oldValue =
+                                          useDefault
+                                              ? defaultValue
+                                              : oldController.text;
+
+                                      final error = validateInput(newValue);
+                                      if (error != null) {
+                                        setState(() {
+                                          errorMessage = error;
+                                        });
+                                        return;
+                                      }
+
+                                      if (newValue != confirmValue) {
+                                        setState(() {
+                                          errorMessage =
+                                              '$newLabel and $confirmLabel do not match';
+                                        });
+                                        return;
+                                      }
+
+                                      if (!useDefault && oldValue.isEmpty) {
+                                        setState(() {
+                                          errorMessage =
+                                              'Please enter $oldLabel';
+                                        });
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        isLoading = true;
+                                        errorMessage = '';
+                                      });
+
+                                      try {
+                                        final success = await onSubmit(
+                                          oldValue,
+                                          newValue,
+                                        );
+
+                                        if (success) {
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                '$title successful',
+                                              ),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        } else {
+                                          setState(() {
+                                            isLoading = false;
+                                            errorMessage =
+                                                'Operation failed. Please try again.';
+                                          });
+                                        }
+                                      } catch (e) {
+                                        setState(() {
+                                          isLoading = false;
+                                          errorMessage =
+                                              'Error: ${e.toString()}';
+                                        });
+                                      }
+                                    },
                           ),
                         ],
                       ),
@@ -1743,208 +1880,6 @@ class _HomePageState extends State<HomePage>
               ),
             );
           },
-        );
-      },
-    );
-  }
-
-  // Refactor dialog calls to use the generic dialog
-  Future<void> _showChangePINDialog() async {
-    await _showCredentialDialog(
-      title: 'Change PIN',
-      oldLabel: 'Old PIN',
-      newLabel: 'New PIN',
-      confirmLabel: 'Confirm PIN',
-      useDefaultOption: true,
-      defaultValue: DEFAULT_PIN,
-      minLength: MIN_PIN_LENGTH,
-      maxLength: MAX_PIN_LENGTH,
-      onSubmit: (oldPin, newPin) async {
-        final pinService = PinManagementService();
-        return pinService.changePin(oldPin, newPin);
-      },
-    );
-  }
-
-  Future<void> _showChangePUKDialog() async {
-    await _showCredentialDialog(
-      title: 'Change PUK',
-      oldLabel: 'Old PUK',
-      newLabel: 'New PUK',
-      confirmLabel: 'Confirm PUK',
-      useDefaultOption: true,
-      defaultValue: DEFAULT_PUK,
-      minLength: MIN_PUK_LENGTH,
-      maxLength: MAX_PUK_LENGTH,
-      onSubmit: (oldPuk, newPuk) async {
-        final pivProvider = Provider.of<PivProvider>(context, listen: false);
-        return pivProvider.changePuk(oldPuk, newPuk);
-      },
-    );
-  }
-
-  Future<void> _showChangeManagerKeyDialog() async {
-    await _showCredentialDialog(
-      title: 'Change Manager Key',
-      oldLabel: 'Old Key',
-      newLabel: 'New Key',
-      confirmLabel: 'Confirm Key',
-      useDefaultOption: true,
-      defaultValue: '', // Set to actual default if available
-      minLength: 6, // Adjust as needed
-      maxLength: 24, // Adjust as needed
-      onSubmit: (oldKey, newKey) async {
-        final pivProvider = Provider.of<PivProvider>(context, listen: false);
-        return pivProvider.changeManagementKey(oldKey, newKey);
-      },
-    );
-  }
-
-  // Function to show Reset PIN dialog
-  Future<void> _showResetDialog() async {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    // Cream color palette for dialog
-    final dialogBgColor =
-        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
-    final dialogTextColor =
-        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
-    final dialogHeaderColor =
-        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
-    final dialogBorderColor =
-        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
-
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.0),
-            side: BorderSide(color: dialogBorderColor, width: 1.0),
-          ),
-          backgroundColor: dialogBgColor,
-          elevation: 5,
-          child: Container(
-            width: 400,
-            padding: const EdgeInsets.all(0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: dialogHeaderColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(16.0),
-                      topRight: Radius.circular(16.0),
-                    ),
-                  ),
-                  child: Text(
-                    'Reset PIN',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: dialogTextColor,
-                    ),
-                  ),
-                ),
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Are you sure you want to reset the PIN to default?',
-                        style: TextStyle(fontSize: 16, color: dialogTextColor),
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'This action cannot be undone.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: dialogTextColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Actions
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          foregroundColor: dialogTextColor,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                        ),
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(
-                            color: dialogTextColor.withOpacity(0.8),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red.withOpacity(0.7),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Reset',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        onPressed: () async {
-                          try {
-                            final pivProvider = Provider.of<PivProvider>(
-                              context,
-                              listen: false,
-                            );
-                            final success =
-                                await pivProvider.resetToDefaultPin();
-                            if (success) {
-                              _showSnackBar('PIN reset to default');
-                            } else {
-                              _showSnackBar('Failed to reset PIN');
-                            }
-                          } catch (e) {
-                            _showSnackBar('Error: ${e.toString()}');
-                          }
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
         );
       },
     );
@@ -2249,6 +2184,60 @@ class _HomePageState extends State<HomePage>
             ),
           ),
         );
+      },
+    );
+  }
+
+  // Method for PIV PIN Reset dialog
+  void _showResetDialog() {
+    _showCredentialDialog(
+      title: 'Reset PIN with PUK',
+      oldLabel: 'PUK',
+      newLabel: 'New PIN',
+      confirmLabel: 'Confirm PIN',
+      useDefaultOption: true,
+      defaultValue: DEFAULT_PIN,
+      minLength: MIN_PIN_LENGTH,
+      maxLength: MAX_PIN_LENGTH,
+      onSubmit: (puk, newPin) async {
+        final pinService = PinManagementService();
+        return await pinService.resetPinWithPuk(puk, newPin);
+      },
+    );
+  }
+
+  // Method for PIV PUK Change dialog
+  void _showChangePUKDialog() {
+    _showCredentialDialog(
+      title: 'Change PUK',
+      oldLabel: 'Current PUK',
+      newLabel: 'New PUK',
+      confirmLabel: 'Confirm PUK',
+      useDefaultOption: true,
+      defaultValue: DEFAULT_PUK,
+      minLength: MIN_PUK_LENGTH,
+      maxLength: MAX_PUK_LENGTH,
+      onSubmit: (oldPuk, newPuk) async {
+        final pinService = PinManagementService();
+        return await pinService.changePuk(oldPuk, newPuk, context);
+      },
+    );
+  }
+
+  // Method for PIV Manager Key Change dialog
+  void _showChangeManagerKeyDialog() {
+    _showCredentialDialog(
+      title: 'Change Manager Key',
+      oldLabel: 'Current Key',
+      newLabel: 'New Key',
+      confirmLabel: 'Confirm Key',
+      useDefaultOption: true,
+      defaultValue: DEFAULT_PIN,
+      minLength: MIN_PIN_LENGTH,
+      maxLength: MAX_PIN_LENGTH,
+      onSubmit: (oldKey, newKey) async {
+        final pinService = PinManagementService();
+        return await pinService.changeManagerKey(oldKey, newKey, context);
       },
     );
   }

@@ -7,11 +7,11 @@ class SecurityKeyCard extends StatelessWidget {
   final VoidCallback? onCopyFirmware;
 
   const SecurityKeyCard({
-    Key? key,
+    super.key,
     required this.securityKey,
     this.onCopySerial,
     this.onCopyFirmware,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
