@@ -5,18 +5,19 @@ import 'pages/home_page.dart';
 import 'pages/accounts_page.dart';
 import 'pages/slots_page.dart';
 import 'pages/key_verification_page.dart';
+import 'pages/coming_soon_page.dart';
 import 'theme_provider.dart';
 import 'services/usb_monitor_service.dart';
 import 'providers/verification_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Clear verification status at startup to ensure fresh verification
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('keyVerified');
   await prefs.remove('detectedKeyName');
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -59,21 +60,27 @@ class _MyAppState extends State<MyApp> {
 
   void _setupDeviceMonitoring() {
     _usbMonitor.deviceStatus.listen((bool devicePresent) async {
-      print('Device status changed: ${devicePresent ? 'Connected' : 'Disconnected'}');
+      print(
+        'Device status changed: ${devicePresent ? 'Connected' : 'Disconnected'}',
+      );
       print('Current verification status: ${_verificationProvider.isVerified}');
-      print('Previous verification status: ${_verificationProvider.wasVerified}');
-      
+      print(
+        'Previous verification status: ${_verificationProvider.wasVerified}',
+      );
+
       if (!devicePresent && _verificationProvider.isVerified) {
         print('Key unplugged detected, clearing verification status');
         await _clearVerificationStatus();
         _verificationProvider.clearVerification();
         print('Verification status updated to: false');
-        
+
         // Force navigation to key verification page
         if (_navigatorKey.currentState != null) {
           print('Forcing navigation to key verification page');
           _navigatorKey.currentState!.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => const KeyVerificationPage()),
+            MaterialPageRoute(
+              builder: (context) => const KeyVerificationPage(),
+            ),
             (route) => false,
           );
         }
@@ -106,7 +113,9 @@ class _MyAppState extends State<MyApp> {
       builder: (context, themeProvider, child) {
         return Consumer<VerificationProvider>(
           builder: (context, verificationProvider, child) {
-            print('Building MaterialApp with isVerified: ${verificationProvider.isVerified}');
+            print(
+              'Building MaterialApp with isVerified: ${verificationProvider.isVerified}',
+            );
             return MaterialApp(
               navigatorKey: _navigatorKey,
               title: 'FEITIAN Authenticator',
@@ -131,26 +140,25 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
               themeMode: themeProvider.themeMode,
-              home: _isLoading
-                  ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-                  : verificationProvider.isVerified
+              home:
+                  _isLoading
+                      ? const Scaffold(
+                        body: Center(child: CircularProgressIndicator()),
+                      )
+                      : verificationProvider.isVerified
                       ? const HomePage()
                       : const KeyVerificationPage(),
               routes: {
                 '/accounts': (context) => const AccountsPage(),
                 '/slots': (context) => const SlotsPage(),
-                '/help': (context) => const Scaffold(
-                      body: Center(child: Text("Help Page")),
-                    ),
-                '/usb': (context) => const Scaffold(
-                      body: Center(child: Text("USB Connection Page")),
-                    ),
-                '/nfc': (context) => const Scaffold(
-                      body: Center(child: Text("NFC Connection Page")),
-                    ),
-                '/business': (context) => const Scaffold(
-                      body: Center(child: Text("Business Page")),
-                    ),
+                '/help':
+                    (context) =>
+                        const Scaffold(body: Center(child: Text("Help Page"))),
+                '/usb': (context) => const ComingSoonPage(feature: 'USB'),
+                '/nfc': (context) => const ComingSoonPage(feature: 'NFC'),
+                '/business':
+                    (context) =>
+                        const ComingSoonPage(feature: 'Hello Business'),
               },
             );
           },
