@@ -337,63 +337,70 @@ class _AccountsPageState extends State<AccountsPage> {
     _newPinController.clear();
     _confirmPinController.clear();
 
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogInputBgColor =
+        isDarkMode ? const Color(0xFF201E17) : const Color(0xFFFFFFFC);
+    final dialogInputBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFDAD2B4);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
-          backgroundColor: dialogColor,
+          backgroundColor: dialogBgColor,
+          elevation: 5,
           child: Container(
             width: 400,
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.all(0),
             decoration: BoxDecoration(
-              color: dialogColor,
-              borderRadius: BorderRadius.circular(8.0),
+              color: dialogBgColor,
+              borderRadius: BorderRadius.circular(16.0),
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min, // This helps reduce the height
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Title with custom styling
+                // Header with rounded corners
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 12,
+                    horizontal: 20,
+                    vertical: 16,
                   ),
                   decoration: BoxDecoration(
-                    color: dialogColor,
+                    color: dialogHeaderColor,
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(8.0),
-                      topRight: Radius.circular(8.0),
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
                     ),
                   ),
                   child: Text(
-                    '',
+                    'Change PIN',
                     style: TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: textColor,
+                      color: dialogTextColor,
                     ),
                   ),
                 ),
 
                 // Content
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Change PIN',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 12), // Reduced spacing
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -401,8 +408,12 @@ class _AccountsPageState extends State<AccountsPage> {
                             width: 100,
                             child: Text(
                               'Old PIN:',
-                              style: TextStyle(fontSize: 14, color: textColor),
-                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.left,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -410,28 +421,50 @@ class _AccountsPageState extends State<AccountsPage> {
                             child: TextField(
                               controller: _oldPinController,
                               decoration: InputDecoration(
-                                hintText: 'Please input old pin',
+                                hintText: 'Please input old PIN',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: textColor.withOpacity(0.5),
+                                  color: dialogTextColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
+                                  horizontal: 12,
+                                  vertical: 12,
                                 ),
-                                border: const UnderlineInputBorder(),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: borderColor),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor.withOpacity(
+                                      0.8,
+                                    ),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: dialogInputBgColor,
                               ),
-                              style: TextStyle(fontSize: 13, color: textColor),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: dialogTextColor,
+                              ),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -439,8 +472,12 @@ class _AccountsPageState extends State<AccountsPage> {
                             width: 100,
                             child: Text(
                               'New PIN:',
-                              style: TextStyle(fontSize: 14, color: textColor),
-                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.left,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -448,28 +485,50 @@ class _AccountsPageState extends State<AccountsPage> {
                             child: TextField(
                               controller: _newPinController,
                               decoration: InputDecoration(
-                                hintText: 'Please input new pin',
+                                hintText: 'Please input new PIN',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: textColor.withOpacity(0.5),
+                                  color: dialogTextColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
+                                  horizontal: 12,
+                                  vertical: 12,
                                 ),
-                                border: const UnderlineInputBorder(),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: borderColor),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor.withOpacity(
+                                      0.8,
+                                    ),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: dialogInputBgColor,
                               ),
-                              style: TextStyle(fontSize: 13, color: textColor),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: dialogTextColor,
+                              ),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -477,8 +536,12 @@ class _AccountsPageState extends State<AccountsPage> {
                             width: 100,
                             child: Text(
                               'Confirm PIN:',
-                              style: TextStyle(fontSize: 14, color: textColor),
-                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.left,
                             ),
                           ),
                           const SizedBox(width: 10),
@@ -486,51 +549,97 @@ class _AccountsPageState extends State<AccountsPage> {
                             child: TextField(
                               controller: _confirmPinController,
                               decoration: InputDecoration(
-                                hintText: 'Please input confirm pin',
+                                hintText: 'Please input confirm PIN',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: textColor.withOpacity(0.5),
+                                  color: dialogTextColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
+                                  horizontal: 12,
+                                  vertical: 12,
                                 ),
-                                border: const UnderlineInputBorder(),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: borderColor),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor.withOpacity(
+                                      0.8,
+                                    ),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: dialogInputBgColor,
                               ),
-                              style: TextStyle(fontSize: 13, color: textColor),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: dialogTextColor,
+                              ),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
 
                 // Actions
-                Container(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 10),
-                  alignment: Alignment.centerRight,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: dialogTextColor.withOpacity(0.8),
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        style: TextButton.styleFrom(
-                          foregroundColor: textColor,
-                          minimumSize: const Size(60, 30),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        child: const Text('Cancel'),
                       ),
-                      TextButton(
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: dialogHeaderColor,
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Change PIN',
+                          style: TextStyle(
+                            color: dialogTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         onPressed: () {
                           // Validate and process PIN change
                           if (_newPinController.text ==
@@ -538,6 +647,12 @@ class _AccountsPageState extends State<AccountsPage> {
                             // Process PIN change
                             Navigator.of(context).pop();
                             // Show success message or handle further actions
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('PIN changed successfully'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
                           } else {
                             // Show error that PINs don't match
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -559,12 +674,6 @@ class _AccountsPageState extends State<AccountsPage> {
                             );
                           }
                         },
-                        style: TextButton.styleFrom(
-                          foregroundColor: textColor,
-                          minimumSize: const Size(60, 30),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
-                        child: const Text('OK'),
                       ),
                     ],
                   ),
@@ -587,60 +696,91 @@ class _AccountsPageState extends State<AccountsPage> {
     // Clear controller before showing dialog
     _fidoPinController.clear();
 
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogInputBgColor =
+        isDarkMode ? const Color(0xFF201E17) : const Color(0xFFFFFFFC);
+    final dialogInputBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFDAD2B4);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
-          backgroundColor: dialogColor,
+          backgroundColor: dialogBgColor,
+          elevation: 5,
           child: Container(
-            width: 350, // Smaller width to match the image
-            padding: EdgeInsets.zero,
+            width: 400,
+            padding: const EdgeInsets.all(0),
             decoration: BoxDecoration(
-              color: dialogColor,
-              borderRadius: BorderRadius.circular(8.0),
+              color: dialogBgColor,
+              borderRadius: BorderRadius.circular(16.0),
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min, // This helps reduce the height
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Title with bold text
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Verify FIDO',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
+                // Header with rounded corners
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: dialogHeaderColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
+                    ),
+                  ),
+                  child: Text(
+                    'Fingerprint Management',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: dialogTextColor,
                     ),
                   ),
                 ),
 
                 // Content
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // FIDO2 PIN input
+                      Text(
+                        'Please verify FIDO2 PIN before accessing fingerprint management',
+                        style: TextStyle(fontSize: 14, color: dialogTextColor),
+                      ),
+                      const SizedBox(height: 20),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Label
-                          Text(
-                            'FIDO2 PIN:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: textColor,
+                          SizedBox(
+                            width: 100,
+                            child: Text(
+                              'FIDO2 PIN:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.left,
                             ),
                           ),
                           const SizedBox(width: 10),
-                          // Input field
                           Expanded(
                             child: TextField(
                               controller: _fidoPinController,
@@ -648,58 +788,126 @@ class _AccountsPageState extends State<AccountsPage> {
                                 hintText: 'Please input FIDO PIN',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: textColor.withOpacity(0.5),
+                                  color: dialogTextColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
+                                  horizontal: 12,
+                                  vertical: 12,
                                 ),
-                                border: const UnderlineInputBorder(),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: borderColor),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor.withOpacity(
+                                      0.8,
+                                    ),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: dialogInputBgColor,
                               ),
-                              style: TextStyle(fontSize: 13, color: textColor),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: dialogTextColor,
+                              ),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
 
-                      // Actions
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: textColor,
-                              minimumSize: const Size(60, 30),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                            ),
-                            child: const Text('Cancel'),
+                // Actions
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // Process FIDO verification
-                              Navigator.of(context).pop();
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: textColor,
-                              minimumSize: const Size(60, 30),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                            ),
-                            child: const Text('OK'),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: dialogTextColor.withOpacity(0.8),
                           ),
-                        ],
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: dialogHeaderColor,
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Verify',
+                          style: TextStyle(
+                            color: dialogTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () {
+                          // Process FIDO verification
+                          if (_fidoPinController.text.isNotEmpty) {
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Fingerprint verification successful',
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please enter FIDO PIN',
+                                  style: TextStyle(
+                                    color:
+                                        isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                  ),
+                                ),
+                                backgroundColor:
+                                    isDarkMode
+                                        ? Colors.grey[800]
+                                        : Colors.grey[300],
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -722,60 +930,91 @@ class _AccountsPageState extends State<AccountsPage> {
     // Clear controller before showing dialog
     _credentialPinController.clear();
 
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogInputBgColor =
+        isDarkMode ? const Color(0xFF201E17) : const Color(0xFFFFFFFC);
+    final dialogInputBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFDAD2B4);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
-          backgroundColor: dialogColor,
+          backgroundColor: dialogBgColor,
+          elevation: 5,
           child: Container(
-            width: 350,
-            padding: EdgeInsets.zero,
+            width: 400,
+            padding: const EdgeInsets.all(0),
             decoration: BoxDecoration(
-              color: dialogColor,
-              borderRadius: BorderRadius.circular(8.0),
+              color: dialogBgColor,
+              borderRadius: BorderRadius.circular(16.0),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Title
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 10),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Verify Credential',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
+                // Header with rounded corners
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: dialogHeaderColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
+                    ),
+                  ),
+                  child: Text(
+                    'Credential Management',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: dialogTextColor,
                     ),
                   ),
                 ),
 
                 // Content
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Credential PIN input
+                      Text(
+                        'Please verify your credentials before accessing credential management',
+                        style: TextStyle(fontSize: 14, color: dialogTextColor),
+                      ),
+                      const SizedBox(height: 20),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Label
-                          Text(
-                            'Credential PIN:',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: textColor,
+                          SizedBox(
+                            width: 120,
+                            child: Text(
+                              'Credential PIN:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.left,
                             ),
                           ),
                           const SizedBox(width: 10),
-                          // Input field
                           Expanded(
                             child: TextField(
                               controller: _credentialPinController,
@@ -783,58 +1022,126 @@ class _AccountsPageState extends State<AccountsPage> {
                                 hintText: 'Please input Credential PIN',
                                 hintStyle: TextStyle(
                                   fontSize: 13,
-                                  color: textColor.withOpacity(0.5),
+                                  color: dialogTextColor.withOpacity(0.5),
                                 ),
                                 isDense: true,
                                 contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 8,
+                                  horizontal: 12,
+                                  vertical: 12,
                                 ),
-                                border: const UnderlineInputBorder(),
-                                enabledBorder: UnderlineInputBorder(
-                                  borderSide: BorderSide(color: borderColor),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
                                 ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide(
+                                    color: dialogInputBorderColor.withOpacity(
+                                      0.8,
+                                    ),
+                                    width: 2,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: dialogInputBgColor,
                               ),
-                              style: TextStyle(fontSize: 13, color: textColor),
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: dialogTextColor,
+                              ),
                               obscureText: true,
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
 
-                      // Actions
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: textColor,
-                              minimumSize: const Size(60, 30),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                            ),
-                            child: const Text('Cancel'),
+                // Actions
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // Process Credential verification
-                              Navigator.of(context).pop();
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: textColor,
-                              minimumSize: const Size(60, 30),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                            ),
-                            child: const Text('OK'),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: dialogTextColor.withOpacity(0.8),
                           ),
-                        ],
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: dialogHeaderColor,
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          'Verify',
+                          style: TextStyle(
+                            color: dialogTextColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () {
+                          // Process Credential verification
+                          if (_credentialPinController.text.isNotEmpty) {
+                            Navigator.of(context).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Credential verification successful',
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Please enter Credential PIN',
+                                  style: TextStyle(
+                                    color:
+                                        isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                  ),
+                                ),
+                                backgroundColor:
+                                    isDarkMode
+                                        ? Colors.grey[800]
+                                        : Colors.grey[300],
+                              ),
+                            );
+                          }
+                        },
                       ),
                     ],
                   ),

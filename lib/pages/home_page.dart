@@ -184,6 +184,18 @@ class _HomePageState extends State<HomePage>
 
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    // New cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogAccentColor =
+        isDarkMode ? const Color(0xFFD1C9A6) : const Color(0xFFBBB193);
+
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -191,128 +203,190 @@ class _HomePageState extends State<HomePage>
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
-          backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+          backgroundColor: dialogBgColor,
+          elevation: 5,
           child: Container(
             width: 500,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'PIV Management',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white70 : Colors.black87,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: isDarkMode ? Colors.white70 : Colors.black54,
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'PIN Management',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: isDarkMode ? Colors.white60 : Colors.black87,
+                // Header with rounded corners
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
                   ),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    if (!isPinSet)
-                      _buildPIVActionButton(
-                        'Set PIN',
-                        Icons.add_circle_outline,
-                        () {
-                          Navigator.pop(context);
-                          _showSetPinDialog(context);
+                  decoration: BoxDecoration(
+                    color: dialogHeaderColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'PIV Management',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: dialogTextColor,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: dialogTextColor.withOpacity(0.7),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
                         },
                       ),
-                    _buildPIVActionButton('Change PIN', Icons.vpn_key, () {
-                      Navigator.pop(context);
-                      if (isPinSet) {
-                        _showChangePinDialog(context);
-                      } else {
-                        _showSnackBar(
-                          'You must set a PIN before you can change it',
-                        );
-                      }
-                    }),
-                    _buildPIVActionButton('Change PUK', Icons.shield, () {
-                      Navigator.pop(context);
-                      _showChangePUKDialog();
-                    }),
-                    _buildPIVActionButton('Reset PIN', Icons.refresh, () {
-                      Navigator.pop(context);
-                      _showResetDialog();
-                    }),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Certificate Management',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: isDarkMode ? Colors.white60 : Colors.black87,
+                    ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildCertButton(
-                        'Import Certificate',
-                        Icons.upload_file,
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'PIN Management',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: dialogTextColor,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _buildCertButton(
-                        'Export Certificate',
-                        Icons.download,
+                      const SizedBox(height: 10),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: dialogHeaderColor.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: dialogBorderColor,
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            if (!isPinSet)
+                              _buildPIVActionButton(
+                                'Set PIN',
+                                Icons.add_circle_outline,
+                                () {
+                                  Navigator.pop(context);
+                                  _showSetPinDialog(context);
+                                },
+                                dialogTextColor,
+                                dialogBorderColor.withOpacity(0.5),
+                              ),
+                            _buildPIVActionButton(
+                              'Change PIN',
+                              Icons.vpn_key,
+                              () {
+                                Navigator.pop(context);
+                                if (isPinSet) {
+                                  _showChangePinDialog(context);
+                                } else {
+                                  _showSnackBar(
+                                    'You must set a PIN before you can change it',
+                                  );
+                                }
+                              },
+                              dialogTextColor,
+                              dialogBorderColor.withOpacity(0.5),
+                            ),
+                            _buildPIVActionButton(
+                              'Change PUK',
+                              Icons.shield,
+                              () {
+                                Navigator.pop(context);
+                                _showChangePUKDialog();
+                              },
+                              dialogTextColor,
+                              dialogBorderColor.withOpacity(0.5),
+                            ),
+                            _buildPIVActionButton(
+                              'Reset PIN',
+                              Icons.refresh,
+                              () {
+                                Navigator.pop(context);
+                                _showResetDialog();
+                              },
+                              dialogTextColor,
+                              dialogBorderColor.withOpacity(0.5),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                      Text(
+                        'Certificate Management',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: dialogTextColor,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildCertButton(
+                              'Import Certificate',
+                              Icons.upload_file,
+                              dialogAccentColor,
+                              dialogTextColor,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildCertButton(
+                              'Export Certificate',
+                              Icons.download,
+                              dialogAccentColor,
+                              dialogTextColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildCertButton(
+                              'Generate Key Pair',
+                              Icons.vpn_key,
+                              dialogAccentColor,
+                              dialogTextColor,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildCertButton(
+                              'Change Manager Key',
+                              Icons.security,
+                              dialogAccentColor,
+                              dialogTextColor,
+                              () {
+                                Navigator.pop(context);
+                                _showChangeManagerKeyDialog();
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildCertButton(
-                        'Generate Key Pair',
-                        Icons.vpn_key,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: _buildCertButton(
-                        'Change Manager Key',
-                        Icons.security,
-                        () {
-                          Navigator.pop(context);
-                          _showChangeManagerKeyDialog();
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -325,6 +399,16 @@ class _HomePageState extends State<HomePage>
   Future<void> _showFIDOManagementDialog() async {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    // Cream color palette for dialog - matching PIV dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -332,76 +416,137 @@ class _HomePageState extends State<HomePage>
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
-          backgroundColor: isDarkMode ? Colors.grey[900] : Colors.white,
+          backgroundColor: dialogBgColor,
+          elevation: 5,
           child: Container(
             width: 500,
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'FIDO Management',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white70 : Colors.black87,
-                      ),
+                // Header with rounded corners
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: dialogHeaderColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.close,
-                        color: isDarkMode ? Colors.white70 : Colors.black54,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'FIDO Management',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: dialogTextColor,
+                        ),
                       ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ],
+                      IconButton(
+                        icon: Icon(
+                          Icons.close,
+                          color: dialogTextColor.withOpacity(0.7),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-                _buildFIDOManagementOption('PIN MANAGEMENT', [
-                  _buildFIDOManagementAction('Change PIN', Icons.vpn_key, () {
-                    Navigator.pop(context);
-                    _showChangePinDialog(context);
-                  }),
-                ]),
-                const SizedBox(height: 16),
-                _buildFIDOManagementOption('FINGERPRINT MANAGEMENT', [
-                  _buildFIDOManagementAction(
-                    'Fingerprint Management',
-                    Icons.fingerprint,
-                    () {
-                      Navigator.pop(context);
-                      // TODO: Implement fingerprint management
-                      _showSnackBar('Fingerprint management coming soon');
-                    },
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildFIDOManagementOption(
+                        'PIN MANAGEMENT',
+                        [
+                          _buildFIDOManagementAction(
+                            'Change PIN',
+                            Icons.vpn_key,
+                            () {
+                              Navigator.pop(context);
+                              _showChangePinDialog(context);
+                            },
+                            dialogTextColor,
+                          ),
+                        ],
+                        dialogHeaderColor,
+                        dialogBorderColor,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildFIDOManagementOption(
+                        'FINGERPRINT MANAGEMENT',
+                        [
+                          _buildFIDOManagementAction(
+                            'Fingerprint Management',
+                            Icons.fingerprint,
+                            () {
+                              Navigator.pop(context);
+                              // TODO: Implement fingerprint management
+                              _showSnackBar(
+                                'Fingerprint management coming soon',
+                              );
+                            },
+                            dialogTextColor,
+                          ),
+                        ],
+                        dialogHeaderColor,
+                        dialogBorderColor,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildFIDOManagementOption(
+                        'CREDENTIAL MANAGEMENT',
+                        [
+                          _buildFIDOManagementAction(
+                            'Enum Credential',
+                            Icons.list_alt,
+                            () {
+                              Navigator.pop(context);
+                              // TODO: Implement credential enumeration
+                              _showSnackBar(
+                                'Credential enumeration coming soon',
+                              );
+                            },
+                            dialogTextColor,
+                          ),
+                        ],
+                        dialogHeaderColor,
+                        dialogBorderColor,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildFIDOManagementOption(
+                        'RESET',
+                        [
+                          _buildFIDOManagementAction(
+                            'Reset Device',
+                            Icons.restore,
+                            () {
+                              Navigator.pop(context);
+                              _showResetDialog();
+                            },
+                            dialogTextColor,
+                          ),
+                        ],
+                        dialogHeaderColor,
+                        dialogBorderColor,
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                ]),
-                const SizedBox(height: 16),
-                _buildFIDOManagementOption('CREDENTIAL MANAGEMENT', [
-                  _buildFIDOManagementAction(
-                    'Enum Credential',
-                    Icons.list_alt,
-                    () {
-                      Navigator.pop(context);
-                      // TODO: Implement credential enumeration
-                      _showSnackBar('Credential enumeration coming soon');
-                    },
-                  ),
-                ]),
-                const SizedBox(height: 16),
-                _buildFIDOManagementOption('RESET', [
-                  _buildFIDOManagementAction('Reset Device', Icons.restore, () {
-                    Navigator.pop(context);
-                    _showResetDialog();
-                  }),
-                ]),
-                const SizedBox(height: 20),
+                ),
               ],
             ),
           ),
@@ -411,9 +556,12 @@ class _HomePageState extends State<HomePage>
   }
 
   // Helper widget for FIDO management options
-  Widget _buildFIDOManagementOption(String title, List<Widget> actions) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
+  Widget _buildFIDOManagementOption(
+    String title,
+    List<Widget> actions,
+    Color headerColor,
+    Color borderColor,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -422,14 +570,15 @@ class _HomePageState extends State<HomePage>
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: isDarkMode ? Colors.white60 : Colors.black87,
+            color: headerColor,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: isDarkMode ? Colors.grey[850] : Colors.grey[200],
+            color: headerColor.withOpacity(0.5),
             borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: borderColor, width: 1),
           ),
           child: Column(children: actions),
         ),
@@ -442,41 +591,27 @@ class _HomePageState extends State<HomePage>
     String label,
     IconData icon,
     VoidCallback onTap,
+    Color textColor,
   ) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           border: Border(
-            bottom: BorderSide(
-              color: isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
-              width: 0.5,
-            ),
+            bottom: BorderSide(color: textColor.withOpacity(0.5), width: 0.5),
           ),
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 18,
-              color: isDarkMode ? Colors.white70 : Colors.black87,
-            ),
+            Icon(icon, size: 18, color: textColor),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 15,
-                color: isDarkMode ? Colors.white70 : Colors.black87,
-              ),
-            ),
+            Text(label, style: TextStyle(fontSize: 15, color: textColor)),
             const Spacer(),
             Icon(
               Icons.chevron_right,
               size: 20,
-              color: isDarkMode ? Colors.white54 : Colors.black54,
+              color: textColor.withOpacity(0.7),
             ),
           ],
         ),
@@ -493,155 +628,318 @@ class _HomePageState extends State<HomePage>
     String infoMessage =
         'Set a PIN for your USB security key. This PIN will be required for future operations.';
 
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogInputBgColor =
+        isDarkMode ? const Color(0xFF201E17) : const Color(0xFFFFFFFC);
+    final dialogInputBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFDAD2B4);
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Set PIN'),
-              content: SingleChildScrollView(
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(color: dialogBorderColor, width: 1.0),
+              ),
+              backgroundColor: dialogBgColor,
+              elevation: 5,
+              child: Container(
+                width: 400,
+                padding: const EdgeInsets.all(0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Text(infoMessage, style: const TextStyle(fontSize: 14)),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: newPinController,
-                      decoration: const InputDecoration(
-                        labelText: 'New PIN (6-8 digits)',
-                        border: OutlineInputBorder(),
-                        helperText: 'PIN must be 6-8 digits',
+                    // Header
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
                       ),
-                      obscureText: true,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(8),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: confirmPinController,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm PIN',
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: true,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(8),
-                      ],
-                    ),
-                    if (errorMessage.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Text(
-                          errorMessage,
-                          style: const TextStyle(color: Colors.red),
+                      decoration: BoxDecoration(
+                        color: dialogHeaderColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16.0),
+                          topRight: Radius.circular(16.0),
                         ),
                       ),
-                    if (isLoading)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: CircularProgressIndicator(),
+                      child: Text(
+                        'Set PIN',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: dialogTextColor,
+                        ),
                       ),
+                    ),
+                    // Content
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            infoMessage,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: dialogTextColor,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: newPinController,
+                            decoration: InputDecoration(
+                              labelText: 'New PIN (6-8 digits)',
+                              labelStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor.withOpacity(
+                                    0.8,
+                                  ),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: dialogInputBgColor,
+                              helperText: 'PIN must be 6-8 digits',
+                              helperStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.6),
+                              ),
+                            ),
+                            obscureText: true,
+                            style: TextStyle(color: dialogTextColor),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(8),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: confirmPinController,
+                            decoration: InputDecoration(
+                              labelText: 'Confirm PIN',
+                              labelStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor.withOpacity(
+                                    0.8,
+                                  ),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: dialogInputBgColor,
+                            ),
+                            obscureText: true,
+                            style: TextStyle(color: dialogTextColor),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(8),
+                            ],
+                          ),
+                          if (errorMessage.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text(
+                                errorMessage,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          if (isLoading)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: CircularProgressIndicator(),
+                            ),
+                        ],
+                      ),
+                    ),
+                    // Actions
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: dialogTextColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                            ),
+                            onPressed: () {
+                              // Reset the dialog flag when the dialog is closed
+                              this.setState(() {
+                                _isPinDialogShowing = false;
+                              });
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: dialogHeaderColor,
+                              foregroundColor: dialogTextColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Set PIN',
+                              style: TextStyle(
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed:
+                                isLoading
+                                    ? null
+                                    : () async {
+                                      // Validate PIN input
+                                      if (newPinController.text.isEmpty ||
+                                          confirmPinController.text.isEmpty) {
+                                        setState(() {
+                                          errorMessage =
+                                              'Please enter both fields';
+                                        });
+                                        return;
+                                      }
+
+                                      if (newPinController.text.length <
+                                          MIN_PIN_LENGTH) {
+                                        setState(() {
+                                          errorMessage =
+                                              'PIN must be at least $MIN_PIN_LENGTH digits';
+                                        });
+                                        return;
+                                      }
+
+                                      if (newPinController.text.length >
+                                          MAX_PIN_LENGTH) {
+                                        setState(() {
+                                          errorMessage =
+                                              'PIN must be at most $MAX_PIN_LENGTH digits';
+                                        });
+                                        return;
+                                      }
+
+                                      if (newPinController.text !=
+                                          confirmPinController.text) {
+                                        setState(() {
+                                          errorMessage = 'PINs do not match';
+                                        });
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        isLoading = true;
+                                        errorMessage = '';
+                                        infoMessage =
+                                            'Setting PIN on USB security key...';
+                                      });
+
+                                      try {
+                                        final pinService =
+                                            PinManagementService();
+                                        bool success = await pinService
+                                            .setInitialPin(
+                                              newPinController.text,
+                                            );
+
+                                        if (success) {
+                                          // Reset the dialog flag when the dialog is successfully completed
+                                          this.setState(() {
+                                            _isPinDialogShowing = false;
+                                          });
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'PIN set successfully',
+                                              ),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        } else {
+                                          setState(() {
+                                            isLoading = false;
+                                            errorMessage =
+                                                'Failed to set PIN. Make sure the security key is connected.';
+                                          });
+                                        }
+                                      } catch (e) {
+                                        setState(() {
+                                          isLoading = false;
+                                          errorMessage =
+                                              'Error: ${e.toString()}';
+                                        });
+                                      }
+                                    },
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    // Reset the dialog flag when the dialog is closed
-                    this.setState(() {
-                      _isPinDialogShowing = false;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Set PIN'),
-                  onPressed:
-                      isLoading
-                          ? null
-                          : () async {
-                            // Validate PIN input
-                            if (newPinController.text.isEmpty ||
-                                confirmPinController.text.isEmpty) {
-                              setState(() {
-                                errorMessage = 'Please enter both fields';
-                              });
-                              return;
-                            }
-
-                            if (newPinController.text.length < MIN_PIN_LENGTH) {
-                              setState(() {
-                                errorMessage =
-                                    'PIN must be at least $MIN_PIN_LENGTH digits';
-                              });
-                              return;
-                            }
-
-                            if (newPinController.text.length > MAX_PIN_LENGTH) {
-                              setState(() {
-                                errorMessage =
-                                    'PIN must be at most $MAX_PIN_LENGTH digits';
-                              });
-                              return;
-                            }
-
-                            if (newPinController.text !=
-                                confirmPinController.text) {
-                              setState(() {
-                                errorMessage = 'PINs do not match';
-                              });
-                              return;
-                            }
-
-                            setState(() {
-                              isLoading = true;
-                              errorMessage = '';
-                              infoMessage =
-                                  'Setting PIN on USB security key...';
-                            });
-
-                            try {
-                              final pinService = PinManagementService();
-                              bool success = await pinService.setInitialPin(
-                                newPinController.text,
-                              );
-
-                              if (success) {
-                                // Reset the dialog flag when the dialog is successfully completed
-                                this.setState(() {
-                                  _isPinDialogShowing = false;
-                                });
-                                Navigator.of(context).pop();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('PIN set successfully'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              } else {
-                                setState(() {
-                                  isLoading = false;
-                                  errorMessage =
-                                      'Failed to set PIN. Make sure the security key is connected.';
-                                });
-                              }
-                            } catch (e) {
-                              setState(() {
-                                isLoading = false;
-                                errorMessage = 'Error: ${e.toString()}';
-                              });
-                            }
-                          },
-                ),
-              ],
             );
           },
         );
@@ -663,178 +961,374 @@ class _HomePageState extends State<HomePage>
     String errorMessage = '';
     String infoMessage = 'Change the PIN for your USB security key.';
 
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogInputBgColor =
+        isDarkMode ? const Color(0xFF201E17) : const Color(0xFFFFFFFC);
+    final dialogInputBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFDAD2B4);
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Change PIN'),
-              content: SingleChildScrollView(
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(color: dialogBorderColor, width: 1.0),
+              ),
+              backgroundColor: dialogBgColor,
+              elevation: 5,
+              child: Container(
+                width: 400,
+                padding: const EdgeInsets.all(0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Text(infoMessage, style: const TextStyle(fontSize: 14)),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: oldPinController,
-                      decoration: const InputDecoration(
-                        labelText: 'Current PIN',
-                        border: OutlineInputBorder(),
-                        helperText: 'Enter your current PIN',
+                    // Header
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
                       ),
-                      obscureText: true,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(8),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: newPinController,
-                      decoration: const InputDecoration(
-                        labelText: 'New PIN (6-8 digits)',
-                        border: OutlineInputBorder(),
-                        helperText: 'PIN must be 6-8 digits',
-                      ),
-                      obscureText: true,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(8),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    TextField(
-                      controller: confirmPinController,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm New PIN',
-                        border: OutlineInputBorder(),
-                      ),
-                      obscureText: true,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(8),
-                      ],
-                    ),
-                    if (errorMessage.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: Text(
-                          errorMessage,
-                          style: const TextStyle(color: Colors.red),
+                      decoration: BoxDecoration(
+                        color: dialogHeaderColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16.0),
+                          topRight: Radius.circular(16.0),
                         ),
                       ),
-                    if (isLoading)
-                      const Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: CircularProgressIndicator(),
+                      child: Text(
+                        'Change PIN',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: dialogTextColor,
+                        ),
                       ),
+                    ),
+                    // Content
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            infoMessage,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: dialogTextColor,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: oldPinController,
+                            decoration: InputDecoration(
+                              labelText: 'Current PIN',
+                              labelStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor.withOpacity(
+                                    0.8,
+                                  ),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: dialogInputBgColor,
+                              helperText: 'Enter your current PIN',
+                              helperStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.6),
+                              ),
+                            ),
+                            obscureText: true,
+                            style: TextStyle(color: dialogTextColor),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(8),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: newPinController,
+                            decoration: InputDecoration(
+                              labelText: 'New PIN (6-8 digits)',
+                              labelStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor.withOpacity(
+                                    0.8,
+                                  ),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: dialogInputBgColor,
+                              helperText: 'PIN must be 6-8 digits',
+                              helperStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.6),
+                              ),
+                            ),
+                            obscureText: true,
+                            style: TextStyle(color: dialogTextColor),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(8),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: confirmPinController,
+                            decoration: InputDecoration(
+                              labelText: 'Confirm New PIN',
+                              labelStyle: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: dialogInputBorderColor.withOpacity(
+                                    0.8,
+                                  ),
+                                  width: 2,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: dialogInputBgColor,
+                            ),
+                            obscureText: true,
+                            style: TextStyle(color: dialogTextColor),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(8),
+                            ],
+                          ),
+                          if (errorMessage.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text(
+                                errorMessage,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          if (isLoading)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: CircularProgressIndicator(),
+                            ),
+                        ],
+                      ),
+                    ),
+                    // Actions
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: dialogTextColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: dialogHeaderColor,
+                              foregroundColor: dialogTextColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'Change PIN',
+                              style: TextStyle(
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed:
+                                isLoading
+                                    ? null
+                                    : () async {
+                                      // Validate PIN input
+                                      if (oldPinController.text.isEmpty ||
+                                          newPinController.text.isEmpty ||
+                                          confirmPinController.text.isEmpty) {
+                                        setState(() {
+                                          errorMessage =
+                                              'Please fill all fields';
+                                        });
+                                        return;
+                                      }
+
+                                      if (newPinController.text.length <
+                                          MIN_PIN_LENGTH) {
+                                        setState(() {
+                                          errorMessage =
+                                              'New PIN must be at least $MIN_PIN_LENGTH digits';
+                                        });
+                                        return;
+                                      }
+
+                                      if (newPinController.text.length >
+                                          MAX_PIN_LENGTH) {
+                                        setState(() {
+                                          errorMessage =
+                                              'New PIN must be at most $MAX_PIN_LENGTH digits';
+                                        });
+                                        return;
+                                      }
+
+                                      if (newPinController.text !=
+                                          confirmPinController.text) {
+                                        setState(() {
+                                          errorMessage =
+                                              'New PINs do not match';
+                                        });
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        isLoading = true;
+                                        errorMessage = '';
+                                        infoMessage =
+                                            'Changing PIN on USB security key...';
+                                      });
+
+                                      try {
+                                        final pinService =
+                                            PinManagementService();
+
+                                        // First validate the current PIN
+                                        bool isCurrentPinValid =
+                                            await pinService.validatePin(
+                                              oldPinController.text,
+                                            );
+
+                                        if (!isCurrentPinValid) {
+                                          setState(() {
+                                            isLoading = false;
+                                            errorMessage =
+                                                'Current PIN is incorrect';
+                                          });
+                                          return;
+                                        }
+
+                                        // If valid, change the PIN
+                                        bool success = await pinService
+                                            .changePin(
+                                              oldPinController.text,
+                                              newPinController.text,
+                                            );
+
+                                        if (success) {
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'PIN changed successfully',
+                                              ),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        } else {
+                                          setState(() {
+                                            isLoading = false;
+                                            errorMessage =
+                                                'Failed to change PIN. Make sure the security key is connected.';
+                                          });
+                                        }
+                                      } catch (e) {
+                                        setState(() {
+                                          isLoading = false;
+                                          errorMessage =
+                                              'Error: ${e.toString()}';
+                                        });
+                                      }
+                                    },
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('Cancel'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                TextButton(
-                  child: const Text('Change PIN'),
-                  onPressed:
-                      isLoading
-                          ? null
-                          : () async {
-                            // Validate PIN input
-                            if (oldPinController.text.isEmpty ||
-                                newPinController.text.isEmpty ||
-                                confirmPinController.text.isEmpty) {
-                              setState(() {
-                                errorMessage = 'Please fill all fields';
-                              });
-                              return;
-                            }
-
-                            if (newPinController.text.length < MIN_PIN_LENGTH) {
-                              setState(() {
-                                errorMessage =
-                                    'New PIN must be at least $MIN_PIN_LENGTH digits';
-                              });
-                              return;
-                            }
-
-                            if (newPinController.text.length > MAX_PIN_LENGTH) {
-                              setState(() {
-                                errorMessage =
-                                    'New PIN must be at most $MAX_PIN_LENGTH digits';
-                              });
-                              return;
-                            }
-
-                            if (newPinController.text !=
-                                confirmPinController.text) {
-                              setState(() {
-                                errorMessage = 'New PINs do not match';
-                              });
-                              return;
-                            }
-
-                            setState(() {
-                              isLoading = true;
-                              errorMessage = '';
-                              infoMessage =
-                                  'Changing PIN on USB security key...';
-                            });
-
-                            try {
-                              final pinService = PinManagementService();
-
-                              // First validate the current PIN
-                              bool isCurrentPinValid = await pinService
-                                  .validatePin(oldPinController.text);
-
-                              if (!isCurrentPinValid) {
-                                setState(() {
-                                  isLoading = false;
-                                  errorMessage = 'Current PIN is incorrect';
-                                });
-                                return;
-                              }
-
-                              // If valid, change the PIN
-                              bool success = await pinService.changePin(
-                                oldPinController.text,
-                                newPinController.text,
-                              );
-
-                              if (success) {
-                                Navigator.of(context).pop();
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('PIN changed successfully'),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              } else {
-                                setState(() {
-                                  isLoading = false;
-                                  errorMessage =
-                                      'Failed to change PIN. Make sure the security key is connected.';
-                                });
-                              }
-                            } catch (e) {
-                              setState(() {
-                                isLoading = false;
-                                errorMessage = 'Error: ${e.toString()}';
-                              });
-                            }
-                          },
-                ),
-              ],
             );
           },
         );
@@ -859,6 +1353,22 @@ class _HomePageState extends State<HomePage>
     TextEditingController newController = TextEditingController();
     TextEditingController confirmController = TextEditingController();
 
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogInputBgColor =
+        isDarkMode ? const Color(0xFF201E17) : const Color(0xFFFFFFFC);
+    final dialogInputBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFDAD2B4);
+
     String? validateInput(String value) {
       if (value.isEmpty) return 'Please enter $newLabel';
       if (!RegExp(r'^\d+$').hasMatch(value)) return '$newLabel must be numeric';
@@ -877,205 +1387,356 @@ class _HomePageState extends State<HomePage>
           builder: (context, setState) {
             return Dialog(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16.0),
+                side: BorderSide(color: dialogBorderColor, width: 1.0),
               ),
+              backgroundColor: dialogBgColor,
+              elevation: 5,
               child: Container(
-                padding: const EdgeInsets.all(20),
+                width: 400,
+                padding: const EdgeInsets.all(0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          title,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                    // Header
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: dialogHeaderColor,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16.0),
+                          topRight: Radius.circular(16.0),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    if (useDefaultOption)
-                      Row(
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Checkbox(
-                            value: useDefault,
-                            onChanged: (bool? value) {
-                              setState(() {
-                                useDefault = value ?? false;
-                              });
+                          Text(
+                            title,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: dialogTextColor,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.close,
+                              color: dialogTextColor.withOpacity(0.7),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
                             },
                           ),
-                          Text('Use default $oldLabel'),
                         ],
                       ),
-                    const SizedBox(height: 10),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 110,
-                          child: Text(
-                            '$oldLabel:',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                    // Content
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (useDefaultOption)
+                            Row(
+                              children: [
+                                Checkbox(
+                                  value: useDefault,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      useDefault = value ?? false;
+                                    });
+                                  },
+                                  fillColor: MaterialStateProperty.resolveWith((
+                                    states,
+                                  ) {
+                                    if (states.contains(
+                                      MaterialState.selected,
+                                    )) {
+                                      return dialogHeaderColor;
+                                    }
+                                    return dialogTextColor.withOpacity(0.3);
+                                  }),
+                                  checkColor: dialogTextColor,
+                                ),
+                                Text(
+                                  'Use default $oldLabel',
+                                  style: TextStyle(color: dialogTextColor),
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller: oldController,
-                            decoration: InputDecoration(
-                              hintText: 'Please input $oldLabel',
-                              border: const OutlineInputBorder(),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 12,
+                          const SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 110,
+                                child: Text(
+                                  '$oldLabel:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: dialogTextColor,
+                                  ),
+                                ),
                               ),
-                              isDense: true,
-                            ),
-                            obscureText: true,
-                            enabled: !useDefault,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
+                              Expanded(
+                                child: TextField(
+                                  controller: oldController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Please input $oldLabel',
+                                    hintStyle: TextStyle(
+                                      color: dialogTextColor.withOpacity(0.6),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor
+                                            .withOpacity(0.8),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: dialogInputBgColor,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 12,
+                                    ),
+                                    isDense: true,
+                                  ),
+                                  obscureText: true,
+                                  enabled: !useDefault,
+                                  style: TextStyle(color: dialogTextColor),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 110,
-                          child: Text(
-                            '$newLabel:',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge?.color,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller: newController,
-                            decoration: InputDecoration(
-                              hintText: 'Please input $newLabel',
-                              border: const OutlineInputBorder(),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 12,
+                          const SizedBox(height: 16),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 110,
+                                child: Text(
+                                  '$newLabel:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: dialogTextColor,
+                                  ),
+                                ),
                               ),
-                              isDense: true,
-                            ),
-                            obscureText: true,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
+                              Expanded(
+                                child: TextField(
+                                  controller: newController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Please input $newLabel',
+                                    hintStyle: TextStyle(
+                                      color: dialogTextColor.withOpacity(0.6),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor
+                                            .withOpacity(0.8),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: dialogInputBgColor,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 12,
+                                    ),
+                                    isDense: true,
+                                  ),
+                                  obscureText: true,
+                                  style: TextStyle(color: dialogTextColor),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 110,
-                          child: Text(
-                            '$confirmLabel:',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color:
-                                  Theme.of(context).textTheme.bodyLarge?.color,
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller: confirmController,
-                            decoration: InputDecoration(
-                              hintText: 'Please confirm $newLabel',
-                              border: const OutlineInputBorder(),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 12,
+                          const SizedBox(height: 16),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 110,
+                                child: Text(
+                                  '$confirmLabel:',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: dialogTextColor,
+                                  ),
+                                ),
                               ),
-                              isDense: true,
-                            ),
-                            obscureText: true,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
+                              Expanded(
+                                child: TextField(
+                                  controller: confirmController,
+                                  decoration: InputDecoration(
+                                    hintText: 'Please confirm $newLabel',
+                                    hintStyle: TextStyle(
+                                      color: dialogTextColor.withOpacity(0.6),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: dialogInputBorderColor
+                                            .withOpacity(0.8),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: dialogInputBgColor,
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 12,
+                                    ),
+                                    isDense: true,
+                                  ),
+                                  obscureText: true,
+                                  style: TextStyle(color: dialogTextColor),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        const SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () async {
-                            final newValue = newController.text;
-                            final confirmValue = confirmController.text;
-                            final oldValue =
-                                useDefault ? defaultValue : oldController.text;
-                            final error = validateInput(newValue);
-                            if (error != null) {
-                              _showSnackBar(error);
-                              return;
-                            }
-                            if (newValue != confirmValue) {
-                              _showSnackBar(
-                                'New and Confirm values do not match',
-                              );
-                              return;
-                            }
-                            if (!useDefault && oldValue.isEmpty) {
-                              _showSnackBar('Please enter $oldLabel');
-                              return;
-                            }
-                            try {
-                              final success = await onSubmit(
-                                oldValue,
-                                newValue,
-                              );
-                              if (success) {
-                                _showSnackBar('$title successful');
-                                Navigator.of(context).pop();
-                              } else {
-                                _showSnackBar('Failed to $title');
+                    // Actions
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              foregroundColor: dialogTextColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                            ),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                color: dialogTextColor.withOpacity(0.8),
+                              ),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: dialogHeaderColor,
+                              foregroundColor: dialogTextColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: Text(
+                              'OK',
+                              style: TextStyle(
+                                color: dialogTextColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () async {
+                              final newValue = newController.text;
+                              final confirmValue = confirmController.text;
+                              final oldValue =
+                                  useDefault
+                                      ? defaultValue
+                                      : oldController.text;
+                              final error = validateInput(newValue);
+                              if (error != null) {
+                                _showSnackBar(error);
+                                return;
                               }
-                            } catch (e) {
-                              _showSnackBar('Error: ${e.toString()}');
-                            }
-                          },
-                          child: const Text('OK'),
-                        ),
-                      ],
+                              if (newValue != confirmValue) {
+                                _showSnackBar(
+                                  'New and Confirm values do not match',
+                                );
+                                return;
+                              }
+                              if (!useDefault && oldValue.isEmpty) {
+                                _showSnackBar('Please enter $oldLabel');
+                                return;
+                              }
+                              try {
+                                final success = await onSubmit(
+                                  oldValue,
+                                  newValue,
+                                );
+                                if (success) {
+                                  _showSnackBar('$title successful');
+                                  Navigator.of(context).pop();
+                                } else {
+                                  _showSnackBar('Failed to $title');
+                                }
+                              } catch (e) {
+                                _showSnackBar('Error: ${e.toString()}');
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -1141,78 +1802,149 @@ class _HomePageState extends State<HomePage>
 
   // Function to show Reset PIN dialog
   Future<void> _showResetDialog() async {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return Dialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(2.0),
+            borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
-          title: Text(
-            'Reset PIN',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).textTheme.bodyLarge?.color,
-            ),
-          ),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(
-                  'Are you sure you want to reset the PIN to default?',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+          backgroundColor: dialogBgColor,
+          elevation: 5,
+          child: Container(
+            width: 400,
+            padding: const EdgeInsets.all(0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: dialogHeaderColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
+                    ),
+                  ),
+                  child: Text(
+                    'Reset PIN',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: dialogTextColor,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'This action cannot be undone.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Are you sure you want to reset the PIN to default?',
+                        style: TextStyle(fontSize: 16, color: dialogTextColor),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'This action cannot be undone.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: dialogTextColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Actions
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                        ),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: dialogTextColor.withOpacity(0.8),
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.withOpacity(0.7),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Reset',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () async {
+                          try {
+                            final pivProvider = Provider.of<PivProvider>(
+                              context,
+                              listen: false,
+                            );
+                            final success =
+                                await pivProvider.resetToDefaultPin();
+                            if (success) {
+                              _showSnackBar('PIN reset to default');
+                            } else {
+                              _showSnackBar('Failed to reset PIN');
+                            }
+                          } catch (e) {
+                            _showSnackBar('Error: ${e.toString()}');
+                          }
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Cancel',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            const SizedBox(width: 10),
-            ElevatedButton(
-              child: const Text('Reset', style: TextStyle(fontSize: 16)),
-              onPressed: () async {
-                try {
-                  final pivProvider = Provider.of<PivProvider>(
-                    context,
-                    listen: false,
-                  );
-                  final success = await pivProvider.resetToDefaultPin();
-                  if (success) {
-                    _showSnackBar('PIN reset to default');
-                  } else {
-                    _showSnackBar('Failed to reset PIN');
-                  }
-                } catch (e) {
-                  _showSnackBar('Error: ${e.toString()}');
-                }
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
         );
       },
     );
@@ -1259,6 +1991,8 @@ class _HomePageState extends State<HomePage>
     String label,
     IconData icon, [
     Function()? onTap,
+    Color? textColor,
+    Color? borderColor,
   ]) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
@@ -1271,7 +2005,9 @@ class _HomePageState extends State<HomePage>
             color: isDarkMode ? Colors.black87 : null,
             border: Border(
               bottom: BorderSide(
-                color: isDarkMode ? Colors.white10 : Colors.grey[300]!,
+                color:
+                    borderColor ??
+                    (isDarkMode ? Colors.white10 : Colors.grey[300]!),
               ),
             ),
           ),
@@ -1281,14 +2017,18 @@ class _HomePageState extends State<HomePage>
               Icon(
                 icon,
                 size: 16,
-                color: isDarkMode ? Colors.white54 : Colors.grey[700],
+                color:
+                    textColor ??
+                    (isDarkMode ? Colors.white54 : Colors.grey[700]),
               ),
               const SizedBox(width: 4),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: 14,
-                  color: isDarkMode ? Colors.white70 : Colors.grey[800],
+                  color:
+                      textColor ??
+                      (isDarkMode ? Colors.white70 : Colors.grey[800]),
                 ),
               ),
             ],
@@ -1298,7 +2038,13 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Widget _buildCertButton(String label, IconData icon, [Function()? onTap]) {
+  Widget _buildCertButton(
+    String label,
+    IconData icon, [
+    Color? bgColor,
+    Color? textColor,
+    Function()? onTap,
+  ]) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return InkWell(
@@ -1306,7 +2052,7 @@ class _HomePageState extends State<HomePage>
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isDarkMode ? Colors.black87 : Colors.grey[500],
+          color: bgColor ?? (isDarkMode ? Colors.black87 : Colors.grey[500]),
           border: Border.all(
             color: isDarkMode ? Colors.white12 : Colors.grey[600]!,
           ),
@@ -1327,14 +2073,15 @@ class _HomePageState extends State<HomePage>
             Icon(
               icon,
               size: 16,
-              color: isDarkMode ? Colors.white70 : Colors.white,
+              color: textColor ?? (isDarkMode ? Colors.white70 : Colors.white),
             ),
             const SizedBox(width: 4),
             Text(
               label,
               style: TextStyle(
                 fontSize: 14,
-                color: isDarkMode ? Colors.white70 : Colors.white,
+                color:
+                    textColor ?? (isDarkMode ? Colors.white70 : Colors.white),
               ),
             ),
           ],
@@ -1349,104 +2096,141 @@ class _HomePageState extends State<HomePage>
     );
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    // Cream color palette for dialog
+    final dialogBgColor =
+        isDarkMode ? const Color(0xFF2A2922) : const Color(0xFFF5F1E3);
+    final dialogTextColor =
+        isDarkMode ? const Color(0xFFE8E4D5) : const Color(0xFF5A5444);
+    final dialogHeaderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFEAE6D7);
+    final dialogBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFE0D9C0);
+    final dialogInputBgColor =
+        isDarkMode ? const Color(0xFF201E17) : const Color(0xFFFFFFFC);
+    final dialogInputBorderColor =
+        isDarkMode ? const Color(0xFF38352D) : const Color(0xFFDAD2B4);
+
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: isDarkMode ? Colors.black : Colors.grey[300],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16.0),
-            side:
-                isDarkMode
-                    ? const BorderSide(color: Colors.white10, width: 1)
-                    : BorderSide.none,
+            side: BorderSide(color: dialogBorderColor, width: 1.0),
           ),
+          backgroundColor: dialogBgColor,
+          elevation: 5,
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 300),
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
+            width: 350,
+            padding: const EdgeInsets.all(0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Header
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: dialogHeaderColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16.0),
+                      topRight: Radius.circular(16.0),
+                    ),
+                  ),
+                  child: Text(
                     'Edit Security Key Name',
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: isDarkMode ? Colors.white70 : Colors.grey[800],
-                      letterSpacing: 0.5,
+                      color: dialogTextColor,
                     ),
                   ),
-                  const SizedBox(height: 15),
-                  TextField(
-                    controller: textController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: isDarkMode ? Colors.grey[900] : Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color:
-                              isDarkMode ? Colors.white24 : Colors.grey[400]!,
-                          width: 1.0,
+                ),
+                // Content
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextField(
+                        controller: textController,
+                        decoration: InputDecoration(
+                          labelText: 'Security Key Name',
+                          labelStyle: TextStyle(
+                            color: dialogTextColor.withOpacity(0.8),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: dialogInputBorderColor,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: dialogInputBorderColor,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: dialogInputBorderColor.withOpacity(0.8),
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: dialogInputBgColor,
                         ),
+                        style: TextStyle(color: dialogTextColor),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color:
-                              isDarkMode ? Colors.white24 : Colors.grey[400]!,
-                          width: 1.0,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(
-                          color:
-                              isDarkMode
-                                  ? Colors.blue[700]!
-                                  : Colors.blue[400]!,
-                          width: 1.5,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 14,
-                      ),
-                    ),
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white70 : Colors.black,
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  Row(
+                ),
+                // Actions
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
+                        style: TextButton.styleFrom(
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                        ),
                         child: Text(
                           'Cancel',
                           style: TextStyle(
-                            color:
-                                isDarkMode ? Colors.white54 : Colors.grey[700],
-                            fontSize: 14,
+                            color: dialogTextColor.withOpacity(0.8),
                           ),
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
                       ),
-                      const SizedBox(width: 16),
-                      TextButton(
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: dialogHeaderColor,
+                          foregroundColor: dialogTextColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                         child: Text(
                           'Save',
                           style: TextStyle(
-                            color:
-                                isDarkMode
-                                    ? Colors.blue.shade300
-                                    : Colors.blue[700],
-                            fontSize: 14,
+                            color: dialogTextColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1460,8 +2244,8 @@ class _HomePageState extends State<HomePage>
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         );
