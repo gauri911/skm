@@ -2405,10 +2405,6 @@ class _HomePageState extends State<HomePage>
                                       securityKeyImage,
                                       height: 180,
                                       width: 210,
-                                      color:
-                                          themeProvider.isDarkMode
-                                              ? Colors.white70
-                                              : null,
                                     ),
                                   ),
                                 ),
